@@ -8,9 +8,36 @@ use Illuminate\Http\Request;
 
 class DanhMucController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $danhMucs = DanhMuc::orderBy('created_at', 'desc')->paginate(15);
+        $query = DanhMuc::query();
+
+        // Search
+        if ($request->has('search') && $request->search) {
+            $query->where('ten', 'like', '%' . $request->search . '%');
+        }
+
+        // Sort
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+        
+        if (in_array($sortBy, ['id', 'ten', 'created_at'])) {
+            $query->orderBy($sortBy, $sortOrder);
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        // Pagination - 8 items per page
+        $danhMucs = $query->paginate(8)->withQueryString();
+
+        // If AJAX request, return JSON
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('admin.danhmuc.table', compact('danhMucs'))->render(),
+                'pagination' => view('admin.danhmuc.pagination', compact('danhMucs'))->render(),
+            ]);
+        }
+
         return view('admin.danhmuc.index', compact('danhMucs'));
     }
 
