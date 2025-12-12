@@ -3,7 +3,13 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
+use App\Models\DonHang;
+use App\Models\ChiTietDonHang;
+use App\Models\BienThe;
+use App\Models\NguoiDung;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CheckoutController extends Controller
 {
@@ -13,6 +19,15 @@ class CheckoutController extends Controller
         
         if (empty($cart)) {
             return redirect()->route('cart.index')->with('error', 'Giỏ hàng trống!');
+        }
+
+        // Validate cart items and stock
+        foreach ($cart as $key => $item) {
+            $variant = BienThe::find($item['variant_id']);
+            if (!$variant || $variant->so_luong_ton < $item['quantity']) {
+                return redirect()->route('cart.index')
+                    ->with('error', 'Một số sản phẩm trong giỏ hàng không còn đủ số lượng. Vui lòng kiểm tra lại!');
+            }
         }
 
         $total = 0;
@@ -39,11 +54,84 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index')->with('error', 'Giỏ hàng trống!');
         }
 
-        // TODO: Lưu đơn hàng vào database
-        // Tạm thời chỉ xóa giỏ hàng
+        // Validate stock again
+        foreach ($cart as $item) {
+            $variant = BienThe::find($item['variant_id']);
+            if (!$variant || $variant->so_luong_ton < $item['quantity']) {
+                return redirect()->route('cart.index')
+                    ->with('error', 'Một số sản phẩm không còn đủ số lượng. Vui lòng kiểm tra lại!');
+            }
+        }
+
+        // Calculate total
+        $total = 0;
+        foreach ($cart as $item) {
+            $total += $item['price'] * $item['quantity'];
+        }
+
+        $donHang = DB::transaction(function () use ($request, $cart, $total) {
+            // Find or create nguoidung record if user is logged in
+            $nguoidungId = null;
+            if (Auth::check()) {
+                try {
+                    $user = Auth::user();
+                    // Find existing nguoidung first to preserve existing data
+                    $existingNguoiDung = NguoiDung::where('email', $user->email)->first();
+                    
+                    // Use updateOrCreate to handle both create and update cases
+                    $nguoiDung = NguoiDung::updateOrCreate(
+                        ['email' => $user->email],
+                        [
+                            'ten' => $user->name,
+                            'mat_khau' => $user->password, // Store hashed password
+                            'sdt' => $existingNguoiDung->sdt ?? null, // Keep existing if updating
+                            'dia_chi' => $existingNguoiDung->dia_chi ?? null, // Keep existing if updating
+                        ]
+                    );
+                    $nguoidungId = $nguoiDung->id;
+                } catch (\Exception $e) {
+                    // If error creating nguoidung, set to null (allow guest checkout)
+                    \Log::warning('Failed to create/find nguoidung for user: ' . ($user->email ?? 'unknown'), ['error' => $e->getMessage()]);
+                    $nguoidungId = null;
+                }
+            }
+
+            // Create order
+            $donHang = DonHang::create([
+                'nguoidung_id' => $nguoidungId,
+                'ten_khach' => $request->ho_ten,
+                'sdt_khach' => $request->dien_thoai,
+                'email_khach' => $request->email,
+                'dia_chi_khach' => $request->dia_chi,
+                'tong_tien' => $total,
+                'trang_thai' => 'cho_xac_nhan',
+            ]);
+
+            // Create order details and update stock
+            foreach ($cart as $item) {
+                $variant = BienThe::findOrFail($item['variant_id']);
+                
+                ChiTietDonHang::create([
+                    'donhang_id' => $donHang->id,
+                    'sanpham_id' => $item['product_id'],
+                    'bien_the_id' => $item['variant_id'],
+                    'so_luong' => $item['quantity'],
+                    'gia_luc_mua' => $item['price'],
+                ]);
+
+                // Update stock
+                $variant->so_luong_ton -= $item['quantity'];
+                $variant->save();
+            }
+
+            return $donHang;
+        });
+
+        // Clear cart
         session(['cart' => []]);
 
-        return redirect()->route('home')->with('success', 'Đặt hàng thành công! Chúng tôi sẽ liên hệ với bạn sớm nhất.');
+        return redirect()->route('home')
+            ->with('success', 'Đặt hàng thành công! Mã đơn hàng: #' . $donHang->id . '. Chúng tôi sẽ liên hệ với bạn sớm nhất.');
     }
 }
 

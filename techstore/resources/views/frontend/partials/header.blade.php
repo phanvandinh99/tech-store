@@ -63,14 +63,15 @@
                                                         <li><a href="{{ route('cart.index') }}">Giỏ hàng</a></li>
                                                         <li><a href="{{ route('checkout.index') }}">Thanh toán</a></li>
                                                         @auth
-                                                            <li><a href="#">Tài khoản của tôi</a></li>
-                                                            <li><a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Đăng xuất</a></li>
-                                                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                                                @csrf
-                                                            </form>
-                                                        @else
-                                                            <li><a href="{{ route('login') }}">Đăng nhập</a></li>
-                                                        @endauth
+                                                                <li><a href="#">{{ Auth::user()->name }}</a></li>
+                                                                <li><a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Đăng xuất</a></li>
+                                                                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                                                    @csrf
+                                                                </form>
+                                                            @else
+                                                                <li><a href="{{ route('login') }}">Đăng nhập</a></li>
+                                                                <li><a href="{{ route('register') }}">Đăng ký</a></li>
+                                                            @endauth
                                                     </ul>
                                                 </li>
                                             </ul>
@@ -159,14 +160,17 @@
             <div class="header_bottom">
                 <div class="row align-items-center">
                     <div class="column1 col-lg-3 col-md-6">
-                        <div class="categories_menu">
+                        <div class="categories_menu" style="position: relative;">
                             <div class="categories_title">
-                                <h2 class="categori_toggle">TẤT CẢ DANH MỤC</h2>
+                                <h2 class="categori_toggle" onclick="toggleCategoriesMenu()" style="cursor: pointer; position: relative;">
+                                    TẤT CẢ DANH MỤC
+                                    <i class="fa fa-angle-down" id="categoriesToggleIcon" style="float: right; margin-top: 5px; transition: transform 0.3s;"></i>
+                                </h2>
                             </div>
-                            <div class="categories_menu_toggle">
-                                <ul>
+                            <div class="categories_menu_toggle" id="categoriesMenuToggle" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-top: 2px solid #e74c3c; z-index: 999; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                <ul style="list-style: none; padding: 0; margin: 0;">
                                     @foreach($categories as $category)
-                                        <li><a href="{{ route('products.index', ['category' => $category->id]) }}">{{ $category->ten }}</a></li>
+                                        <li style="border-bottom: 1px solid #eee;"><a href="{{ route('products.index', ['category' => $category->id]) }}" style="display: block; padding: 0.75rem 1rem; color: #333; text-decoration: none; transition: all 0.3s;">{{ $category->ten }}</a></li>
                                     @endforeach
                                 </ul>
                             </div>
@@ -202,4 +206,58 @@
     </div>
 </header>
 <!--header area end-->
+
+<script>
+function toggleCategoriesMenu() {
+    const menu = document.getElementById('categoriesMenuToggle');
+    const icon = document.getElementById('categoriesToggleIcon');
+    
+    if (!menu || !icon) return;
+    
+    if (menu.style.display === 'none' || menu.style.display === '') {
+        menu.style.display = 'block';
+        icon.classList.remove('fa-angle-down');
+        icon.classList.add('fa-angle-up');
+        icon.style.transform = 'rotate(180deg)';
+    } else {
+        menu.style.display = 'none';
+        icon.classList.remove('fa-angle-up');
+        icon.classList.add('fa-angle-down');
+        icon.style.transform = 'rotate(0deg)';
+    }
+}
+
+// Close menu when clicking outside
+document.addEventListener('click', function(event) {
+    const categoriesMenu = document.querySelector('.categories_menu');
+    const menu = document.getElementById('categoriesMenuToggle');
+    const icon = document.getElementById('categoriesToggleIcon');
+    
+    if (categoriesMenu && menu && icon) {
+        if (!categoriesMenu.contains(event.target)) {
+            if (menu.style.display === 'block') {
+                menu.style.display = 'none';
+                icon.classList.remove('fa-angle-up');
+                icon.classList.add('fa-angle-down');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+    }
+});
+
+// Hover effect for menu items
+document.addEventListener('DOMContentLoaded', function() {
+    const menuItems = document.querySelectorAll('#categoriesMenuToggle li a');
+    menuItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = '#f8f9fa';
+            this.style.color = '#e74c3c';
+        });
+        item.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = 'transparent';
+            this.style.color = '#333';
+        });
+    });
+});
+</script>
 

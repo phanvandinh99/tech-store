@@ -27,32 +27,66 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
+        // Get variant info
+        $variant = \App\Models\BienThe::with('sanPham')->findOrFail($request->variant_id);
+        
+        // Check stock
+        if ($variant->so_luong_ton < $request->quantity) {
+            return back()->withErrors(['quantity' => 'Số lượng sản phẩm không đủ trong kho.'])->withInput();
+        }
+
         $cart = session('cart', []);
         $key = $request->product_id . '_' . $request->variant_id;
 
         if (isset($cart[$key])) {
-            $cart[$key]['quantity'] += $request->quantity;
+            $newQuantity = $cart[$key]['quantity'] + $request->quantity;
+            if ($newQuantity > $variant->so_luong_ton) {
+                return back()->withErrors(['quantity' => 'Số lượng sản phẩm không đủ trong kho.'])->withInput();
+            }
+            $cart[$key]['quantity'] = $newQuantity;
         } else {
+            $primaryImage = $variant->sanPham->anhSanPhams->where('la_anh_chinh', true)->first() 
+                         ?? $variant->sanPham->anhSanPhams->first();
+            $imageUrl = $primaryImage ? asset('storage/' . $primaryImage->url) : asset('assets/img/product/product1.jpg');
+            
             $cart[$key] = [
                 'product_id' => $request->product_id,
                 'variant_id' => $request->variant_id,
-                'name' => $request->product_name ?? 'Sản phẩm',
-                'price' => $request->price ?? 0,
+                'name' => $request->product_name ?? $variant->sanPham->ten,
+                'price' => $request->price ?? $variant->gia,
                 'quantity' => $request->quantity,
-                'image' => $request->image ?? '',
+                'image' => $request->image ?? $imageUrl,
             ];
         }
 
         session(['cart' => $cart]);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã thêm sản phẩm vào giỏ hàng!',
+                'cart_count' => count($cart)
+            ]);
+        }
 
         return redirect()->route('cart.index')->with('success', 'Đã thêm sản phẩm vào giỏ hàng!');
     }
 
     public function update(Request $request, $key)
     {
+        $request->validate([
+            'quantity' => 'required|integer|min:1',
+        ]);
+
         $cart = session('cart', []);
         
         if (isset($cart[$key])) {
+            // Check stock
+            $variant = \App\Models\BienThe::findOrFail($cart[$key]['variant_id']);
+            if ($variant->so_luong_ton < $request->quantity) {
+                return back()->withErrors(['quantity' => 'Số lượng sản phẩm không đủ trong kho.'])->withInput();
+            }
+            
             $cart[$key]['quantity'] = $request->quantity;
             session(['cart' => $cart]);
         }

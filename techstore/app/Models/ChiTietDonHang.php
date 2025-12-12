@@ -9,6 +9,9 @@ class ChiTietDonHang extends Model
 {
     protected $table = 'chitiet_donhang';
     
+    const UPDATED_AT = null;
+    const CREATED_AT = null;
+    
     protected $fillable = ['donhang_id', 'sanpham_id', 'bien_the_id', 'so_luong', 'gia_luc_mua'];
 
     protected $casts = [

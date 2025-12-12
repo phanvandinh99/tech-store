@@ -63,7 +63,18 @@ class ProductController extends Controller
             ->limit(4)
             ->get();
 
-        return view('frontend.products.show', compact('product', 'relatedProducts'));
+        // Prepare variants data for JavaScript
+        $variants = $product->bienThes->map(function($bt) {
+            return [
+                'id' => $bt->id,
+                'sku' => $bt->sku,
+                'gia' => $bt->gia,
+                'so_luong_ton' => $bt->so_luong_ton,
+                'giatri_ids' => $bt->giaTriThuocTinhs->pluck('id')->toArray()
+            ];
+        })->values();
+
+        return view('frontend.products.show', compact('product', 'relatedProducts', 'variants'));
     }
 }
 
