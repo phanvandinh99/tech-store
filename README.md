@@ -117,15 +117,17 @@ npm run dev
 php artisan serve
 ```
 
-Truy cập ứng dụng tại: `http://localhost:8000`
+### Bước 6: Truy cập ứng dụng
 
-### Bước 6: Đăng nhập Admin Panel
+**Trang khách hàng (Frontend):**
+- URL: `http://localhost:8000`
+- Chức năng: Xem sản phẩm, thêm vào giỏ hàng, đặt hàng
 
-Truy cập: `http://localhost:8000/admin/login`
-
-**Thông tin đăng nhập mặc định:**
-- Email: `admin@gmail.com`
-- Password: `admin123`
+**Trang quản trị (Admin Panel):**
+- URL: `http://localhost:8000/admin/login`
+- Thông tin đăng nhập mặc định:
+  - Email: `admin@gmail.com`
+  - Password: `admin123`
 
 ## 📁 Cấu trúc dự án
 
@@ -137,18 +139,74 @@ tech-store/
 │   ├── app/
 │   │   ├── Http/
 │   │   │   └── Controllers/
-│   │   │       └── Admin/          # Controllers cho admin
+│   │   │       ├── Admin/          # Controllers cho admin
+│   │   │       │   ├── AuthController.php
+│   │   │       │   ├── DashboardController.php
+│   │   │       │   ├── DanhMucController.php
+│   │   │       │   ├── SanPhamController.php
+│   │   │       │   ├── DonHangController.php
+│   │   │       │   └── NguoiDungController.php
+│   │   │       └── Customer/       # Controllers cho khách hàng
+│   │   │           ├── HomeController.php
+│   │   │           ├── ProductController.php
+│   │   │           ├── CartController.php
+│   │   │           ├── CheckoutController.php
+│   │   │           └── CustomerAuthController.php
 │   │   └── Models/                 # Eloquent Models
 │   ├── database/
 │   │   ├── migrations/             # Database migrations
 │   │   └── seeders/                # Database seeders
 │   ├── resources/
 │   │   └── views/
-│   │       └── admin/              # Views cho admin panel
+│   │       ├── admin/              # Views cho admin panel
+│   │       └── frontend/           # Views cho trang khách hàng
+│   │           ├── layout.blade.php
+│   │           ├── home.blade.php
+│   │           └── partials/        # Header, Footer, Offcanvas
 │   └── routes/
 │       └── web.php                 # Web routes
 └── README.md
 ```
+
+## 🛣️ Routes và URLs
+
+### Frontend Routes (Trang khách hàng)
+- **Trang chủ:** `http://localhost:8000/`
+- **Danh sách sản phẩm:** `http://localhost:8000/san-pham`
+- **Chi tiết sản phẩm:** `http://localhost:8000/san-pham/{id}`
+- **Giỏ hàng:** `http://localhost:8000/cart`
+- **Thanh toán:** `http://localhost:8000/checkout`
+- **Đăng nhập:** `http://localhost:8000/login`
+- **Đăng ký:** `http://localhost:8000/register`
+
+### Admin Routes (Trang quản trị)
+- **Đăng nhập admin:** `http://localhost:8000/admin/login`
+- **Dashboard:** `http://localhost:8000/admin/dashboard`
+- **Quản lý danh mục:** `http://localhost:8000/admin/danhmuc`
+- **Quản lý sản phẩm:** `http://localhost:8000/admin/sanpham`
+- **Quản lý đơn hàng:** `http://localhost:8000/admin/donhang`
+- **Quản lý người dùng:** `http://localhost:8000/admin/nguoidung`
+
+## 🎯 Cấu trúc Controllers
+
+Dự án được tổ chức với 2 namespace chính để dễ quản lý và phát triển:
+
+### 1. Admin Controllers (`App\Http\Controllers\Admin\`)
+Quản lý toàn bộ chức năng quản trị:
+- `AuthController` - Xác thực và đăng nhập admin
+- `DashboardController` - Dashboard thống kê
+- `DanhMucController` - CRUD danh mục sản phẩm
+- `SanPhamController` - CRUD sản phẩm
+- `DonHangController` - Quản lý đơn hàng
+- `NguoiDungController` - Quản lý người dùng
+
+### 2. Customer Controllers (`App\Http\Controllers\Customer\`)
+Quản lý toàn bộ chức năng phía khách hàng:
+- `HomeController` - Trang chủ và hiển thị sản phẩm nổi bật
+- `ProductController` - Danh sách và chi tiết sản phẩm
+- `CartController` - Quản lý giỏ hàng (thêm, sửa, xóa)
+- `CheckoutController` - Xử lý thanh toán
+- `CustomerAuthController` - Đăng nhập/Đăng ký khách hàng
 
 ## 🔑 Tài khoản mẫu
 

@@ -479,6 +479,14 @@
                 <i class="bi bi-cart-check"></i>
                 <span>Đơn hàng</span>
             </a>
+            <a class="nav-link {{ request()->routeIs('admin.phieunhap.*') ? 'active' : '' }}" href="{{ route('admin.phieunhap.index') }}">
+                <i class="bi bi-box-arrow-in-down"></i>
+                <span>Nhập hàng</span>
+            </a>
+            <a class="nav-link {{ request()->routeIs('admin.nhacungcap.*') ? 'active' : '' }}" href="{{ route('admin.nhacungcap.index') }}">
+                <i class="bi bi-building"></i>
+                <span>Nhà cung cấp</span>
+            </a>
             <a class="nav-link {{ request()->routeIs('admin.nguoidung.*') ? 'active' : '' }}" href="{{ route('admin.nguoidung.index') }}">
                 <i class="bi bi-people"></i>
                 <span>Người dùng</span>

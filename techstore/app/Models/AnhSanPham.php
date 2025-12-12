@@ -17,6 +17,12 @@ class AnhSanPham extends Model
         'la_anh_chinh' => 'boolean',
     ];
 
+    // Accessor để tương thích với code frontend
+    public function getUrlAttribute()
+    {
+        return $this->duong_dan;
+    }
+
     public function sanPham(): BelongsTo
     {
         return $this->belongsTo(SanPham::class, 'sanpham_id');
