@@ -12,11 +12,40 @@ class DonHangController extends Controller
     {
         $query = DonHang::with('nguoiDung', 'chiTietDonHangs.sanPham', 'chiTietDonHangs.bienThe');
 
+        // Search
+        if ($request->has('search') && $request->search) {
+            $query->where(function($q) use ($request) {
+                $q->where('id', 'like', '%' . $request->search . '%')
+                  ->orWhere('ten_khach', 'like', '%' . $request->search . '%')
+                  ->orWhere('sdt_khach', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        // Filter by status
         if ($request->has('trang_thai') && $request->trang_thai) {
             $query->where('trang_thai', $request->trang_thai);
         }
 
-        $donHangs = $query->orderBy('created_at', 'desc')->paginate(15);
+        // Sort
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+        
+        if (in_array($sortBy, ['id', 'tong_tien', 'trang_thai', 'created_at'])) {
+            $query->orderBy($sortBy, $sortOrder);
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        // Pagination - 8 items per page
+        $donHangs = $query->paginate(8)->withQueryString();
+
+        // If AJAX request, return JSON
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('admin.donhang.table', compact('donHangs'))->render(),
+                'pagination' => view('admin.donhang.pagination', compact('donHangs'))->render(),
+            ]);
+        }
         
         return view('admin.donhang.index', compact('donHangs'));
     }

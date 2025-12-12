@@ -13,11 +13,41 @@ use Illuminate\Support\Facades\DB;
 
 class SanPhamController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $sanPhams = SanPham::with('danhMuc', 'bienThes')
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
+        $query = SanPham::with('danhMuc', 'bienThes');
+
+        // Search
+        if ($request->has('search') && $request->search) {
+            $query->where(function($q) use ($request) {
+                $q->where('ten', 'like', '%' . $request->search . '%')
+                  ->orWhereHas('danhMuc', function($q) use ($request) {
+                      $q->where('ten', 'like', '%' . $request->search . '%');
+                  });
+            });
+        }
+
+        // Sort
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+        
+        if (in_array($sortBy, ['id', 'ten', 'created_at'])) {
+            $query->orderBy($sortBy, $sortOrder);
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        // Pagination - 8 items per page
+        $sanPhams = $query->paginate(8)->withQueryString();
+
+        // If AJAX request, return JSON
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('admin.sanpham.table', compact('sanPhams'))->render(),
+                'pagination' => view('admin.sanpham.pagination', compact('sanPhams'))->render(),
+            ]);
+        }
+
         return view('admin.sanpham.index', compact('sanPhams'));
     }
 

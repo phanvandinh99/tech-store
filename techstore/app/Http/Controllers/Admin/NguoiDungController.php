@@ -13,14 +13,35 @@ class NguoiDungController extends Controller
     {
         $query = NguoiDung::query();
 
-        if ($request->has('search')) {
+        // Search
+        if ($request->has('search') && $request->search) {
             $query->where(function($q) use ($request) {
                 $q->where('ten', 'like', '%' . $request->search . '%')
-                  ->orWhere('email', 'like', '%' . $request->search . '%');
+                  ->orWhere('email', 'like', '%' . $request->search . '%')
+                  ->orWhere('sdt', 'like', '%' . $request->search . '%');
             });
         }
 
-        $users = $query->orderBy('created_at', 'desc')->paginate(15);
+        // Sort
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+        
+        if (in_array($sortBy, ['id', 'ten', 'email', 'created_at'])) {
+            $query->orderBy($sortBy, $sortOrder);
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        // Pagination - 8 items per page
+        $users = $query->paginate(8)->withQueryString();
+
+        // If AJAX request, return JSON
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('admin.nguoidung.table', compact('users'))->render(),
+                'pagination' => view('admin.nguoidung.pagination', compact('users'))->render(),
+            ]);
+        }
         
         return view('admin.nguoidung.index', compact('users'));
     }
