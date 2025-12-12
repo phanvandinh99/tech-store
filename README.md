@@ -37,8 +37,162 @@ Thống kê cơ bản (tùy chọn):
     Doanh số theo ngày/tuần
     Sản phẩm bán chạy
 
-🧱 Công nghệ sử dụng (Dự kiến)
-Frontend: HTML, CSS, JavaScript (Bootstrap hoặc Tailwind CSS)
-Backend: PHP với framework Laravel
-Cơ sở dữ liệu: MySQL
-Môi trường phát triển: XAMPP / visual code
+🧱 Công nghệ sử dụng
+- Frontend: HTML, CSS, JavaScript (Bootstrap 5)
+- Backend: PHP với framework Laravel 12
+- Cơ sở dữ liệu: MySQL
+- Môi trường phát triển: XAMPP / Visual Studio Code
+
+## 🚀 Hướng dẫn cài đặt và chạy dự án
+
+### Yêu cầu hệ thống
+- PHP >= 8.2
+- Composer
+- MySQL >= 5.7 hoặc MariaDB >= 10.3
+- Node.js >= 18.x và npm
+- XAMPP (hoặc Apache + MySQL riêng)
+
+### Bước 1: Clone và cài đặt dependencies
+
+```bash
+# Di chuyển vào thư mục dự án
+cd tech-store/techstore
+
+# Cài đặt PHP dependencies
+composer install
+
+# Cài đặt Node.js dependencies
+npm install
+```
+
+### Bước 2: Cấu hình môi trường
+
+1. Copy file `.env.example` thành `.env`:
+```bash
+copy .env.example .env
+```
+
+2. Mở file `.env` và cấu hình database:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=tech_store_db
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+3. Tạo database MySQL:
+```sql
+CREATE DATABASE tech_store_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+### Bước 3: Chạy migrations và seeders
+
+```bash
+# Tạo application key
+php artisan key:generate
+
+# Chạy migrations để tạo các bảng
+php artisan migrate
+
+# Chạy seeders để tạo dữ liệu mẫu
+php artisan db:seed
+```
+
+### Bước 4: Build frontend assets
+
+```bash
+# Build assets cho production
+npm run build
+
+# Hoặc chạy dev server (tự động reload)
+npm run dev
+```
+
+### Bước 5: Chạy server
+
+```bash
+# Chạy Laravel development server
+php artisan serve
+```
+
+Truy cập ứng dụng tại: `http://localhost:8000`
+
+### Bước 6: Đăng nhập Admin Panel
+
+Truy cập: `http://localhost:8000/admin/login`
+
+**Thông tin đăng nhập mặc định:**
+- Email: `admin@gmail.com`
+- Password: `admin123`
+
+## 📁 Cấu trúc dự án
+
+```
+tech-store/
+├── Database/
+│   └── tech_store_db.sql          # File SQL schema gốc
+├── techstore/                      # Thư mục Laravel chính
+│   ├── app/
+│   │   ├── Http/
+│   │   │   └── Controllers/
+│   │   │       └── Admin/          # Controllers cho admin
+│   │   └── Models/                 # Eloquent Models
+│   ├── database/
+│   │   ├── migrations/             # Database migrations
+│   │   └── seeders/                # Database seeders
+│   ├── resources/
+│   │   └── views/
+│   │       └── admin/              # Views cho admin panel
+│   └── routes/
+│       └── web.php                 # Web routes
+└── README.md
+```
+
+## 🔑 Tài khoản mẫu
+
+Sau khi chạy `php artisan db:seed`, bạn sẽ có:
+
+**Admin:**
+- Email: `admin@gmail.com`
+- Password: `admin123`
+
+**Customer:**
+- Email: `customer@gmail.com`
+- Password: `customer123`
+
+## 📊 Dữ liệu mẫu
+
+Seeder sẽ tạo:
+- 4 danh mục: Điện thoại, Máy tính xách tay, Máy tính bảng, Phụ kiện
+- 2 thuộc tính: Màu sắc, Dung lượng lưu trữ
+- 2 sản phẩm mẫu: iPhone 15 Pro Max (3 biến thể), Ốp lưng (1 biến thể)
+- 1 nhà cung cấp và phiếu nhập mẫu
+
+## 🛠️ Các lệnh hữu ích
+
+```bash
+# Xóa và tạo lại database (fresh migration + seed)
+php artisan migrate:fresh --seed
+
+# Tạo migration mới
+php artisan make:migration create_table_name
+
+# Tạo model mới
+php artisan make:model ModelName
+
+# Tạo controller mới
+php artisan make:controller ControllerName
+
+# Xóa cache
+php artisan cache:clear
+php artisan config:clear
+php artisan view:clear
+```
+
+## 📝 Lưu ý
+
+- Đảm bảo MySQL service đang chạy trước khi chạy migrations
+- Nếu gặp lỗi permission, chạy: `chmod -R 775 storage bootstrap/cache`
+- Để sử dụng SQLite thay vì MySQL, đổi `DB_CONNECTION=sqlite` trong `.env`
