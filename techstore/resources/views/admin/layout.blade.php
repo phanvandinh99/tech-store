@@ -545,7 +545,15 @@
         // Toast Notification System
         function showToast(message, type = 'success', duration = 5000) {
             const toastContainer = document.getElementById('toastContainer');
-            if (!toastContainer) return;
+            if (!toastContainer) {
+                console.error('Toast container not found!');
+                return;
+            }
+
+            if (!message || message.trim() === '') {
+                console.error('Toast message is empty!');
+                return;
+            }
 
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
@@ -579,6 +587,12 @@
 
             toastContainer.appendChild(toast);
 
+            // Trigger animation
+            setTimeout(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateX(0)';
+            }, 10);
+
             // Auto remove after duration
             let timer = setTimeout(() => {
                 removeToast(toast);
@@ -587,10 +601,6 @@
             // Pause on hover
             toast.addEventListener('mouseenter', () => {
                 clearTimeout(timer);
-                const progressBar = toast.querySelector('::after');
-                if (progressBar) {
-                    progressBar.style.animationPlayState = 'paused';
-                }
             });
 
             toast.addEventListener('mouseleave', () => {
@@ -609,25 +619,44 @@
             }, 300);
         }
 
-        // Show toasts from session flash messages
-        @if(session('success'))
-            showToast('{{ session('success') }}', 'success');
-        @endif
-
-        @if(session('error'))
-            showToast('{{ session('error') }}', 'error');
-        @endif
-
-        @if(session('warning'))
-            showToast('{{ session('warning') }}', 'warning');
-        @endif
-
-        @if(session('info'))
-            showToast('{{ session('info') }}', 'info');
-        @endif
-
         // Make showToast available globally
         window.showToast = showToast;
+        window.removeToast = removeToast;
+
+        // Function to show session flash messages
+        function showSessionToasts() {
+            const toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) {
+                console.error('Toast container not found');
+                return;
+            }
+
+            @if(session('success'))
+                showToast('{{ addslashes(session('success')) }}', 'success');
+            @endif
+
+            @if(session('error'))
+                showToast('{{ addslashes(session('error')) }}', 'error');
+            @endif
+
+            @if(session('warning'))
+                showToast('{{ addslashes(session('warning')) }}', 'warning');
+            @endif
+
+            @if(session('info'))
+                showToast('{{ addslashes(session('info')) }}', 'info');
+            @endif
+        }
+
+        // Show toasts when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(showSessionToasts, 300);
+            });
+        } else {
+            // DOM is already ready
+            setTimeout(showSessionToasts, 300);
+        }
 
         // Mobile menu toggle
         const menuToggle = document.getElementById('menuToggle');

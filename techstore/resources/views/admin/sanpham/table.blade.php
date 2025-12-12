@@ -49,12 +49,12 @@
                 </td>
                 <td>
                     <div class="action-buttons justify-content-center">
-                        <a href="{{ route('admin.sanpham.edit', $sanPham) }}" 
+                        <a href="{{ route('admin.sanpham.edit', $sanPham->id) }}" 
                            class="btn btn-sm btn-warning btn-icon-sm" 
                            title="Sửa">
                             <i class="bi bi-pencil"></i>
                         </a>
-                        <form action="{{ route('admin.sanpham.destroy', $sanPham) }}" 
+                        <form action="{{ route('admin.sanpham.destroy', $sanPham->id) }}" 
                               method="POST" 
                               class="d-inline"
                               onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">

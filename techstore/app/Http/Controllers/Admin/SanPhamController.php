@@ -103,16 +103,19 @@ class SanPhamController extends Controller
             ->with('success', 'Thêm sản phẩm thành công!');
     }
 
-    public function edit(SanPham $sanPham)
+    public function edit($id)
     {
+        $sanPham = SanPham::findOrFail($id);
         $sanPham->load('thuocTinhs', 'bienThes.giaTriThuocTinhs');
         $danhMucs = DanhMuc::all();
         $thuocTinhs = ThuocTinh::with('giaTriThuocTinhs')->get();
         return view('admin.sanpham.edit', compact('sanPham', 'danhMucs', 'thuocTinhs'));
     }
 
-    public function update(Request $request, SanPham $sanPham)
+    public function update(Request $request, $id)
     {
+        $sanPham = SanPham::findOrFail($id);
+        
         $request->validate([
             'ten' => 'required|string|max:255',
             'danhmuc_id' => 'required|exists:danhmuc,id',
@@ -125,8 +128,9 @@ class SanPhamController extends Controller
             ->with('success', 'Cập nhật sản phẩm thành công!');
     }
 
-    public function destroy(SanPham $sanPham)
+    public function destroy($id)
     {
+        $sanPham = SanPham::findOrFail($id);
         $sanPham->delete();
         return redirect()->route('admin.sanpham.index')
             ->with('success', 'Xóa sản phẩm thành công!');

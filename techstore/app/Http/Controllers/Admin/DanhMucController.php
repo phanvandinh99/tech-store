@@ -58,13 +58,16 @@ class DanhMucController extends Controller
             ->with('success', 'Thêm danh mục thành công!');
     }
 
-    public function edit(DanhMuc $danhMuc)
+    public function edit($id)
     {
+        $danhMuc = DanhMuc::findOrFail($id);
         return view('admin.danhmuc.edit', compact('danhMuc'));
     }
 
-    public function update(Request $request, DanhMuc $danhMuc)
+    public function update(Request $request, $id)
     {
+        $danhMuc = DanhMuc::findOrFail($id);
+        
         $request->validate([
             'ten' => 'required|string|max:100|unique:danhmuc,ten,' . $danhMuc->id,
         ]);
@@ -75,8 +78,9 @@ class DanhMucController extends Controller
             ->with('success', 'Cập nhật danh mục thành công!');
     }
 
-    public function destroy(DanhMuc $danhMuc)
+    public function destroy($id)
     {
+        $danhMuc = DanhMuc::findOrFail($id);
         $danhMuc->delete();
         return redirect()->route('admin.danhmuc.index')
             ->with('success', 'Xóa danh mục thành công!');

@@ -41,12 +41,12 @@
                 </td>
                 <td>
                     <div class="action-buttons justify-content-center">
-                        <a href="{{ route('admin.danhmuc.edit', $danhMuc) }}" 
+                        <a href="{{ route('admin.danhmuc.edit', $danhMuc->id) }}" 
                            class="btn btn-sm btn-warning btn-icon-sm" 
                            title="Sửa">
                             <i class="bi bi-pencil"></i>
                         </a>
-                        <form action="{{ route('admin.danhmuc.destroy', $danhMuc) }}" 
+                        <form action="{{ route('admin.danhmuc.destroy', $danhMuc->id) }}" 
                               method="POST" 
                               class="d-inline"
                               onsubmit="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');">

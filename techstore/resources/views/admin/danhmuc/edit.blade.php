@@ -10,7 +10,7 @@
                 <h4 class="mb-0"><i class="bi bi-pencil"></i> Sửa Danh mục</h4>
             </div>
             <div class="card-body">
-                <form action="{{ route('admin.danhmuc.update', $danhMuc) }}" method="POST">
+                <form action="{{ route('admin.danhmuc.update', $danhMuc->id) }}" method="POST">
                     @csrf
                     @method('PUT')
                     <div class="mb-3">
