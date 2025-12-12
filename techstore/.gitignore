@@ -6,6 +6,9 @@
 /storage/*.key
 /storage/app/*
 !/storage/app/.gitignore
+!/storage/app/public/
+!/storage/app/public/products/
+!/storage/app/public/products/**
 /storage/framework/cache/*
 !/storage/framework/cache/.gitignore
 /storage/framework/sessions/*
@@ -112,3 +115,5 @@ Homestead.yaml
 *.zip
 *.tar.gz
 *.rar
+
+TemplateExample
