@@ -1,0 +1,114 @@
+# Laravel
+/.phpunit.cache
+/.phpunit.result.cache
+/bootstrap/cache/*
+!/bootstrap/cache/.gitignore
+/storage/*.key
+/storage/app/*
+!/storage/app/.gitignore
+/storage/framework/cache/*
+!/storage/framework/cache/.gitignore
+/storage/framework/sessions/*
+!/storage/framework/sessions/.gitignore
+/storage/framework/testing/*
+!/storage/framework/testing/.gitignore
+/storage/framework/views/*
+!/storage/framework/views/.gitignore
+/storage/logs/*
+!/storage/logs/.gitignore
+/storage/pail
+/vendor
+
+# Environment
+.env
+.env.backup
+.env.production
+.env.local
+.env.*.local
+
+# Node.js
+/node_modules
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Build assets
+/public/build
+/public/hot
+/public/storage
+/public/mix-manifest.json
+/public/.htaccess
+
+# IDE & Editors
+/.idea
+/.vscode
+/.fleet
+/.nova
+/.phpactor.json
+/.zed
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Database
+*.sqlite
+*.sqlite-journal
+*.db
+/database/*.sqlite
+/database/*.sqlite-journal
+
+# Testing
+/coverage
+.phpunit.result.cache
+/.phpunit.cache
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Cache
+.cache/
+*.cache
+
+# Composer
+/auth.json
+composer.phar
+
+# Laravel Sail
+Homestead.json
+Homestead.yaml
+/.vagrant
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*~
+
+# Compiled assets
+/public/css
+/public/js
+/public/mix-manifest.json
+
+# Misc
+*.zip
+*.tar.gz
+*.rar
