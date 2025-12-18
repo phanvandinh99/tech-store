@@ -14,12 +14,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([
-            AdminUserSeeder::class,
-            DanhMucSeeder::class,
-            ThuocTinhSeeder::class,
-            SanPhamSeeder::class,
-            NhaCungCapSeeder::class,
-        ]);
+        // Dữ liệu đã được tạo sẵn trong Database/tech_store_db.sql
+        // Không cần chạy seeder
     }
 }

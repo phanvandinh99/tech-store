@@ -467,18 +467,38 @@
                 <i class="bi bi-speedometer2"></i>
                 <span>Dashboard</span>
             </a>
+            
+            <div class="sidebar-divider px-3 py-2">
+                <small class="text-muted text-uppercase">Sản phẩm</small>
+            </div>
             <a class="nav-link {{ request()->routeIs('admin.danhmuc.*') ? 'active' : '' }}" href="{{ route('admin.danhmuc.index') }}">
                 <i class="bi bi-folder"></i>
                 <span>Danh mục</span>
+            </a>
+            <a class="nav-link {{ request()->routeIs('admin.thuonghieu.*') ? 'active' : '' }}" href="{{ route('admin.thuonghieu.index') }}">
+                <i class="bi bi-bookmark-star"></i>
+                <span>Thương hiệu</span>
             </a>
             <a class="nav-link {{ request()->routeIs('admin.sanpham.*') ? 'active' : '' }}" href="{{ route('admin.sanpham.index') }}">
                 <i class="bi bi-box"></i>
                 <span>Sản phẩm</span>
             </a>
+            
+            <div class="sidebar-divider px-3 py-2">
+                <small class="text-muted text-uppercase">Bán hàng</small>
+            </div>
             <a class="nav-link {{ request()->routeIs('admin.donhang.*') ? 'active' : '' }}" href="{{ route('admin.donhang.index') }}">
                 <i class="bi bi-cart-check"></i>
                 <span>Đơn hàng</span>
             </a>
+            <a class="nav-link {{ request()->routeIs('admin.magiamgia.*') ? 'active' : '' }}" href="{{ route('admin.magiamgia.index') }}">
+                <i class="bi bi-ticket-perforated"></i>
+                <span>Mã giảm giá</span>
+            </a>
+            
+            <div class="sidebar-divider px-3 py-2">
+                <small class="text-muted text-uppercase">Kho hàng</small>
+            </div>
             <a class="nav-link {{ request()->routeIs('admin.phieunhap.*') ? 'active' : '' }}" href="{{ route('admin.phieunhap.index') }}">
                 <i class="bi bi-box-arrow-in-down"></i>
                 <span>Nhập hàng</span>
@@ -487,9 +507,29 @@
                 <i class="bi bi-building"></i>
                 <span>Nhà cung cấp</span>
             </a>
+            
+            <div class="sidebar-divider px-3 py-2">
+                <small class="text-muted text-uppercase">Khách hàng</small>
+            </div>
             <a class="nav-link {{ request()->routeIs('admin.nguoidung.*') ? 'active' : '' }}" href="{{ route('admin.nguoidung.index') }}">
                 <i class="bi bi-people"></i>
                 <span>Người dùng</span>
+            </a>
+            <a class="nav-link {{ request()->routeIs('admin.danhgia.*') ? 'active' : '' }}" href="{{ route('admin.danhgia.index') }}">
+                <i class="bi bi-star-half"></i>
+                <span>Đánh giá</span>
+            </a>
+            <a class="nav-link {{ request()->routeIs('admin.baohanh.*') ? 'active' : '' }}" href="{{ route('admin.baohanh.index') }}">
+                <i class="bi bi-shield-check"></i>
+                <span>Bảo hành</span>
+            </a>
+            
+            <div class="sidebar-divider px-3 py-2">
+                <small class="text-muted text-uppercase">Hệ thống</small>
+            </div>
+            <a class="nav-link {{ request()->routeIs('admin.nhatky.*') ? 'active' : '' }}" href="{{ route('admin.nhatky.index') }}">
+                <i class="bi bi-clock-history"></i>
+                <span>Nhật ký</span>
             </a>
         </nav>
     </div>
