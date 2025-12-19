@@ -25,7 +25,7 @@ class NhatKyHoatDong extends Model
 
     public function nguoiDung(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'nguoi_dung_id');
+        return $this->belongsTo(NguoiDung::class, 'nguoi_dung_id');
     }
 
     // Ghi log hoạt động

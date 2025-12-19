@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\DonHang;
 use App\Models\SanPham;
 use App\Models\BienThe;
-use App\Models\User;
+use App\Models\NguoiDung;
 use App\Models\DanhGia;
 use App\Models\YeuCauBaoHanh;
 use Illuminate\Http\Request;
@@ -21,7 +21,7 @@ class DashboardController extends Controller
             'total_orders' => DonHang::count(),
             'pending_orders' => DonHang::where('trang_thai', 'cho_xac_nhan')->count(),
             'total_products' => SanPham::count(),
-            'total_customers' => User::where('vai_tro', 'customer')->count(),
+            'total_customers' => NguoiDung::where('vai_tro', 'customer')->count(),
             'today_revenue' => DonHang::whereDate('created_at', today())
                 ->where('trang_thai', 'hoan_thanh')
                 ->sum('thanh_tien'),

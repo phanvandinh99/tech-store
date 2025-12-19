@@ -63,7 +63,7 @@
                             <div class="mb-3">
                                 <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control @error('ho_ten') is-invalid @enderror" 
-                                       name="ho_ten" value="{{ old('ho_ten', $user->name) }}" required>
+                                       name="ho_ten" value="{{ old('ho_ten', $user->ten ?? '') }}" required>
                                 @error('ho_ten')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

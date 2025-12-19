@@ -63,7 +63,7 @@
                                                         <li><a href="{{ route('cart.index') }}">Giỏ hàng</a></li>
                                                         <li><a href="{{ route('checkout.index') }}">Thanh toán</a></li>
                                                         @auth
-                                                                <li><a href="#">{{ Auth::user()->name }}</a></li>
+                                                                <li><a href="#">{{ Auth::user()->ten }}</a></li>
                                                                 <li><a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Đăng xuất</a></li>
                                                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                                                     @csrf

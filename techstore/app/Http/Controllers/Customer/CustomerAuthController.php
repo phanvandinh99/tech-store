@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User;
+use App\Models\NguoiDung;
 
 class CustomerAuthController extends Controller
 {
@@ -22,23 +22,33 @@ class CustomerAuthController extends Controller
             'password' => 'required',
         ]);
 
-        $credentials = $request->only('email', 'password');
-        $remember = $request->has('remember');
+        // Tìm user theo email
+        $user = NguoiDung::where('email', $request->email)->first();
 
-        if (Auth::attempt($credentials, $remember)) {
-            $user = Auth::user();
-            
-            // Chỉ cho phép customer đăng nhập
-            if ($user->role !== 'admin') {
-                $request->session()->regenerate();
-                return redirect()->intended(route('home'))->with('success', 'Đăng nhập thành công!');
-            } else {
-                Auth::logout();
-                return back()->withErrors(['email' => 'Tài khoản admin không thể đăng nhập tại đây.'])->withInput();
-            }
+        if (!$user) {
+            return back()->withErrors(['email' => 'Email hoặc mật khẩu không đúng.'])->withInput();
         }
 
-        return back()->withErrors(['email' => 'Email hoặc mật khẩu không đúng.'])->withInput();
+        // Kiểm tra password
+        if (!Hash::check($request->password, $user->mat_khau)) {
+            return back()->withErrors(['email' => 'Email hoặc mật khẩu không đúng.'])->withInput();
+        }
+
+        // Kiểm tra tài khoản có bị khóa không
+        if (!$user->isActive()) {
+            return back()->withErrors(['email' => 'Tài khoản của bạn đã bị khóa.'])->withInput();
+        }
+
+        // Chỉ cho phép customer đăng nhập
+        if (!$user->isCustomer()) {
+            return back()->withErrors(['email' => 'Tài khoản admin không thể đăng nhập tại đây.'])->withInput();
+        }
+
+        // Đăng nhập
+        Auth::login($user, $request->has('remember'));
+        $request->session()->regenerate();
+        
+        return redirect()->intended(route('home'))->with('success', 'Đăng nhập thành công!');
     }
 
     public function showRegisterForm()
@@ -50,15 +60,16 @@ class CustomerAuthController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'required|string|email|max:255|unique:nguoi_dung,email',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
+        $user = NguoiDung::create([
+            'ten' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'customer', // Mặc định là customer
+            'mat_khau' => Hash::make($request->password),
+            'vai_tro' => 'customer', // Mặc định là customer
+            'trang_thai' => 'active',
         ]);
 
         Auth::login($user);
@@ -75,4 +86,3 @@ class CustomerAuthController extends Controller
         return redirect()->route('home')->with('success', 'Đăng xuất thành công!');
     }
 }
-

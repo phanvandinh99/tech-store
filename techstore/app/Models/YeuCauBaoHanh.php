@@ -24,7 +24,7 @@ class YeuCauBaoHanh extends Model
 
     public function nguoiDung(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'nguoi_dung_id');
+        return $this->belongsTo(NguoiDung::class, 'nguoi_dung_id');
     }
 
     public function donHang(): BelongsTo

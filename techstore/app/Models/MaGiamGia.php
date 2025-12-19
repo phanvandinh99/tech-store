@@ -25,7 +25,7 @@ class MaGiamGia extends Model
 
     public function nguoiTao(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'nguoi_tao_id');
+        return $this->belongsTo(NguoiDung::class, 'nguoi_tao_id');
     }
 
     public function donHangs(): HasMany
