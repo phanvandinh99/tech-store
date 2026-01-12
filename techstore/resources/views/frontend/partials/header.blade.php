@@ -1,4 +1,93 @@
 <!--header area start-->
+<style>
+.header_user_account {
+    position: relative;
+}
+/* Tạo vùng bridge để không bị mất hover khi di chuyển từ icon sang dropdown */
+.header_user_account::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 100%;
+    height: 10px;
+    background: transparent;
+    z-index: 999;
+}
+.header_user_account #Sub {
+    display: none;
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    min-width: 220px;
+    z-index: 1000;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.header_user_account:hover #Sub,
+.header_user_account:hover::after,
+.header_user_account #Sub:hover {
+    display: block !important;
+}
+.header_user_account #Sub li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.header_user_account #Sub li.user-info {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+.header_user_account #Sub li.user-info .user-name {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.header_user_account #Sub li.user-info .user-email {
+    font-size: 12px;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.header_user_account #Sub li a {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    color: #333;
+    text-decoration: none;
+    border-bottom: 1px solid #f5f5f5;
+    transition: background 0.3s;
+    white-space: nowrap;
+}
+.header_user_account #Sub li a i {
+    margin-right: 10px;
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+}
+.header_user_account #Sub li:last-child a {
+    border-bottom: none;
+}
+.header_user_account #Sub li a:hover {
+    background-color: #f8f9fa;
+}
+.header_user_account #Sub li a.logout-link {
+    color: #e74c3c;
+}
+.header_user_account #Sub li a.logout-link:hover {
+    background-color: #fee;
+    color: #c0392b;
+}
+</style>
 @php
     $categories = \App\Models\DanhMuc::all();
     $cartCount = session('cart', []) ? count(session('cart', [])) : 0;
@@ -91,22 +180,20 @@
                                         <i class="fa fa-user-circle" id="IconUser"></i>
                                         <span class="user_name" style="display: none;">{{ Auth::user()->ten }}</span>
                                     </a>
-                                    <div class="user_dropdown_menu" id="Sub" style="display: none; position: absolute; top: 100%; right: 0; background: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); min-width: 200px; z-index: 1000; margin-top: 10px;">
-                                        <div style="padding: 15px; border-bottom: 1px solid #eee;">
-                                            <div style="font-weight: 600; color: #333; margin-bottom: 5px;">{{ Auth::user()->ten }}</div>
-                                            <div style="font-size: 12px; color: #666;">{{ Auth::user()->email }}</div>
-                                        </div>
-                                        <ul style="list-style: none; padding: 0; margin: 0;">
-                                            <li><a href="#" style="display: block; padding: 12px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #f5f5f5; transition: background 0.3s;">
-                                                <i class="fa fa-user" style="margin-right: 8px; width: 20px;"></i>Tài khoản của tôi</a></li>
-                                            <li><a href="#" style="display: block; padding: 12px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #f5f5f5; transition: background 0.3s;">
-                                                <i class="fa fa-shopping-bag" style="margin-right: 8px; width: 20px;"></i>Đơn hàng của tôi</a></li>
-                                            <li><a href="#" style="display: block; padding: 12px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #f5f5f5; transition: background 0.3s;">
-                                                <i class="fa fa-heart" style="margin-right: 8px; width: 20px;"></i>Sản phẩm yêu thích</a></li>
-                                            <li><a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="display: block; padding: 12px 15px; color: #e74c3c; text-decoration: none; transition: background 0.3s;">
-                                                <i class="fa fa-sign-out" style="margin-right: 8px; width: 20px;"></i>Đăng xuất</a></li>
-                                        </ul>
-                                    </div>
+                                    <ul id="Sub">
+                                        <li class="user-info">
+                                            <div class="user-name">{{ Auth::user()->ten }}</div>
+                                            <div class="user-email">{{ Auth::user()->email }}</div>
+                                        </li>
+                                        <li><a href="#">
+                                            <i class="fa fa-user"></i>Tài khoản của tôi</a></li>
+                                        <li><a href="#">
+                                            <i class="fa fa-shopping-bag"></i>Đơn hàng của tôi</a></li>
+                                        <li><a href="#">
+                                            <i class="fa fa-heart"></i>Sản phẩm yêu thích</a></li>
+                                        <li><a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="logout-link">
+                                            <i class="fa fa-sign-out"></i>Đăng xuất</a></li>
+                                    </ul>
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                         @csrf
                                     </form>
@@ -285,22 +372,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // User dropdown toggle - sử dụng hover như header_wishlist
-    const userAccount = document.querySelector('.header_user_account');
-    const userDropdown = document.querySelector('.header_user_account #Sub');
-    
-    if (userAccount && userDropdown) {
-        // Hover effect for dropdown items
-        const dropdownItems = userDropdown.querySelectorAll('a');
-        dropdownItems.forEach(item => {
-            item.addEventListener('mouseenter', function() {
-                this.style.backgroundColor = '#f8f9fa';
+    // Hover effect for user dropdown items
+    document.addEventListener('DOMContentLoaded', function() {
+        const userDropdown = document.querySelector('.header_user_account #Sub');
+        if (userDropdown) {
+            const dropdownItems = userDropdown.querySelectorAll('a');
+            dropdownItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.backgroundColor = '#f8f9fa';
+                });
+                item.addEventListener('mouseleave', function() {
+                    this.style.backgroundColor = 'transparent';
+                });
             });
-            item.addEventListener('mouseleave', function() {
-                this.style.backgroundColor = 'transparent';
-            });
-        });
-    }
+        }
+    });
 });
 </script>
 
