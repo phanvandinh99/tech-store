@@ -96,20 +96,31 @@ class CheckoutController extends Controller
                 }
             }
 
+            // Generate unique order code
+            do {
+                $maDonHang = 'DH' . date('Ymd') . str_pad(rand(1000, 9999), 4, '0', STR_PAD_LEFT);
+            } while (DonHang::where('ma_don_hang', $maDonHang)->exists());
+            
             // Create order
             $donHang = DonHang::create([
-                'nguoidung_id' => $nguoidungId,
+                'ma_don_hang' => $maDonHang,
+                'nguoi_dung_id' => $nguoidungId,
                 'ten_khach' => $request->ho_ten,
                 'sdt_khach' => $request->dien_thoai,
                 'email_khach' => $request->email,
                 'dia_chi_khach' => $request->dia_chi,
+                'phuong_thuc_thanh_toan' => $request->phuong_thuc_thanh_toan ?? 'cod',
                 'tong_tien' => $total,
+                'thanh_tien' => $total, // Tạm thời bằng tong_tien (chưa có mã giảm giá)
+                'giam_gia' => 0,
                 'trang_thai' => 'cho_xac_nhan',
+                'ghi_chu' => $request->ghi_chu ?? null,
             ]);
 
             // Create order details and update stock
             foreach ($cart as $item) {
                 $variant = BienThe::findOrFail($item['variant_id']);
+                $thanhTien = $item['price'] * $item['quantity'];
                 
                 ChiTietDonHang::create([
                     'donhang_id' => $donHang->id,
@@ -117,6 +128,7 @@ class CheckoutController extends Controller
                     'bien_the_id' => $item['variant_id'],
                     'so_luong' => $item['quantity'],
                     'gia_luc_mua' => $item['price'],
+                    'thanh_tien' => $thanhTien,
                 ]);
 
                 // Update stock

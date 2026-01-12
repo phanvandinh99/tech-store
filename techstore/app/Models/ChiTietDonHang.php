@@ -12,10 +12,11 @@ class ChiTietDonHang extends Model
     const UPDATED_AT = null;
     const CREATED_AT = null;
     
-    protected $fillable = ['donhang_id', 'sanpham_id', 'bien_the_id', 'so_luong', 'gia_luc_mua'];
+    protected $fillable = ['donhang_id', 'sanpham_id', 'bien_the_id', 'so_luong', 'gia_luc_mua', 'thanh_tien'];
 
     protected $casts = [
         'gia_luc_mua' => 'decimal:0',
+        'thanh_tien' => 'decimal:0',
     ];
 
     public function donHang(): BelongsTo
