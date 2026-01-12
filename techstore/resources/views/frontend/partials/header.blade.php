@@ -187,7 +187,7 @@
                                         </li>
                                         <li><a href="#">
                                             <i class="fa fa-user"></i>Tài khoản của tôi</a></li>
-                                        <li><a href="#">
+                                        <li><a href="{{ route('orders.index') }}">
                                             <i class="fa fa-shopping-bag"></i>Đơn hàng của tôi</a></li>
                                         <li><a href="#">
                                             <i class="fa fa-heart"></i>Sản phẩm yêu thích</a></li>
