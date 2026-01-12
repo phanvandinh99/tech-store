@@ -62,7 +62,7 @@
                             <div class="mb-3">
                                 <label for="mota" class="form-label">Mô tả</label>
                                 <textarea class="form-control @error('mota') is-invalid @enderror" 
-                                          id="mota" name="mota" rows="4">{{ old('mota', $sanPham->mota) }}</textarea>
+                                          id="mota" name="mota" rows="4">{{ old('mota', $sanPham->mo_ta_chi_tiet) }}</textarea>
                                 @error('mota')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

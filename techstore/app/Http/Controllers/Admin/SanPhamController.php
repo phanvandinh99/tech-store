@@ -12,6 +12,7 @@ use App\Models\ThuocTinh;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class SanPhamController extends Controller
 {
@@ -65,7 +66,9 @@ class SanPhamController extends Controller
         $request->validate([
             'ten' => 'required|string|max:255',
             'danhmuc_id' => 'required|exists:danhmuc,id',
+            'thuong_hieu_id' => 'nullable|exists:thuong_hieu,id',
             'mota' => 'nullable|string',
+            'trang_thai' => 'nullable|in:draft,active,inactive',
             'thuoc_tinh_ids' => 'nullable|array',
             'thuoc_tinh_ids.*' => 'exists:thuoctinh,id',
             'bien_the' => 'required|array|min:1',
@@ -80,10 +83,22 @@ class SanPhamController extends Controller
         ]);
 
         DB::transaction(function () use ($request) {
+            // Tạo slug từ tên sản phẩm
+            $slug = Str::slug($request->ten);
+            $uniqueSlug = $slug;
+            $counter = 1;
+            while (SanPham::where('slug', $uniqueSlug)->exists()) {
+                $uniqueSlug = $slug . '-' . $counter;
+                $counter++;
+            }
+            
             $sanPham = SanPham::create([
                 'ten' => $request->ten,
+                'slug' => $uniqueSlug,
                 'danhmuc_id' => $request->danhmuc_id,
-                'mota' => $request->mota,
+                'thuong_hieu_id' => $request->thuong_hieu_id ?? null,
+                'mo_ta_chi_tiet' => $request->mota ?? null,
+                'trang_thai' => $request->trang_thai ?? 'draft',
             ]);
 
             // Attach thuộc tính
@@ -143,13 +158,36 @@ class SanPhamController extends Controller
         $request->validate([
             'ten' => 'required|string|max:255',
             'danhmuc_id' => 'required|exists:danhmuc,id',
+            'thuong_hieu_id' => 'nullable|exists:thuong_hieu,id',
             'mota' => 'nullable|string',
+            'trang_thai' => 'nullable|in:draft,active,inactive',
             'thuoc_tinh_ids' => 'nullable|array',
             'thuoc_tinh_ids.*' => 'exists:thuoctinh,id',
         ]);
 
         DB::transaction(function () use ($request, $sanPham) {
-            $sanPham->update($request->only(['ten', 'danhmuc_id', 'mota']));
+            // Tạo slug mới nếu tên thay đổi
+            $updateData = [
+                'ten' => $request->ten,
+                'danhmuc_id' => $request->danhmuc_id,
+                'thuong_hieu_id' => $request->thuong_hieu_id ?? null,
+                'mo_ta_chi_tiet' => $request->mota ?? null,
+                'trang_thai' => $request->trang_thai ?? $sanPham->trang_thai,
+            ];
+            
+            // Nếu tên thay đổi, tạo slug mới
+            if ($sanPham->ten !== $request->ten) {
+                $slug = Str::slug($request->ten);
+                $uniqueSlug = $slug;
+                $counter = 1;
+                while (SanPham::where('slug', $uniqueSlug)->where('id', '!=', $sanPham->id)->exists()) {
+                    $uniqueSlug = $slug . '-' . $counter;
+                    $counter++;
+                }
+                $updateData['slug'] = $uniqueSlug;
+            }
+            
+            $sanPham->update($updateData);
 
             // Sync thuộc tính
             if ($request->has('thuoc_tinh_ids')) {

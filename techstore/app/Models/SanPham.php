@@ -11,7 +11,7 @@ class SanPham extends Model
 {
     protected $table = 'sanpham';
     
-    protected $fillable = ['ten', 'danhmuc_id', 'mota'];
+    protected $fillable = ['ten', 'slug', 'danhmuc_id', 'thuong_hieu_id', 'mo_ta_ngan', 'mo_ta_chi_tiet', 'trang_thai', 'luot_xem', 'luot_ban'];
 
     public function danhMuc(): BelongsTo
     {
