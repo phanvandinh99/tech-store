@@ -85,10 +85,36 @@
                     </div>
                     <div class="col-lg-3 col-md-7 col-6">
                         <div class="header_configure_area">
-                            <div class="header_wishlist">
-                                <a href="#"><i class="ion-android-favorite-outline"></i>
-                                    <span class="wishlist_count">0</span>
-                                </a>
+                            <div class="header_wishlist header_user_account" style="position: relative;">
+                                @auth
+                                    <a href="javascript:void(0)" class="user_dropdown_toggle">
+                                        <i class="fa fa-user-circle" id="IconUser"></i>
+                                        <span class="user_name" style="display: none;">{{ Auth::user()->ten }}</span>
+                                    </a>
+                                    <div class="user_dropdown_menu" id="Sub" style="display: none; position: absolute; top: 100%; right: 0; background: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); min-width: 200px; z-index: 1000; margin-top: 10px;">
+                                        <div style="padding: 15px; border-bottom: 1px solid #eee;">
+                                            <div style="font-weight: 600; color: #333; margin-bottom: 5px;">{{ Auth::user()->ten }}</div>
+                                            <div style="font-size: 12px; color: #666;">{{ Auth::user()->email }}</div>
+                                        </div>
+                                        <ul style="list-style: none; padding: 0; margin: 0;">
+                                            <li><a href="#" style="display: block; padding: 12px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #f5f5f5; transition: background 0.3s;">
+                                                <i class="fa fa-user" style="margin-right: 8px; width: 20px;"></i>Tài khoản của tôi</a></li>
+                                            <li><a href="#" style="display: block; padding: 12px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #f5f5f5; transition: background 0.3s;">
+                                                <i class="fa fa-shopping-bag" style="margin-right: 8px; width: 20px;"></i>Đơn hàng của tôi</a></li>
+                                            <li><a href="#" style="display: block; padding: 12px 15px; color: #333; text-decoration: none; border-bottom: 1px solid #f5f5f5; transition: background 0.3s;">
+                                                <i class="fa fa-heart" style="margin-right: 8px; width: 20px;"></i>Sản phẩm yêu thích</a></li>
+                                            <li><a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="display: block; padding: 12px 15px; color: #e74c3c; text-decoration: none; transition: background 0.3s;">
+                                                <i class="fa fa-sign-out" style="margin-right: 8px; width: 20px;"></i>Đăng xuất</a></li>
+                                        </ul>
+                                    </div>
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                        @csrf
+                                    </form>
+                                @else
+                                    <a href="{{ route('login') }}">
+                                        <i class="fa fa-user-circle" id="IconUser"></i>
+                                    </a>
+                                @endauth
                             </div>
                             <div class="mini_cart_wrapper">
                                 <a href="javascript:void(0)">
@@ -258,6 +284,23 @@ document.addEventListener('DOMContentLoaded', function() {
             this.style.color = '#333';
         });
     });
+    
+    // User dropdown toggle - sử dụng hover như header_wishlist
+    const userAccount = document.querySelector('.header_user_account');
+    const userDropdown = document.querySelector('.header_user_account #Sub');
+    
+    if (userAccount && userDropdown) {
+        // Hover effect for dropdown items
+        const dropdownItems = userDropdown.querySelectorAll('a');
+        dropdownItems.forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#f8f9fa';
+            });
+            item.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = 'transparent';
+            });
+        });
+    }
 });
 </script>
 
