@@ -72,9 +72,9 @@ class CheckoutController extends Controller
         $donHang = DB::transaction(function () use ($request, $cart, $total) {
             // Get nguoi_dung_id if user is logged in
             $nguoiDungId = null;
-            if (Auth::check()) {
-                $user = Auth::user();
-                // Auth::user() already returns NguoiDung model, so we can use its id directly
+            if (Auth::guard('customer')->check()) {
+                $user = Auth::guard('customer')->user();
+                // Auth::guard('customer')->user() already returns NguoiDung model, so we can use its id directly
                 $nguoiDungId = $user->id;
                 
                 // Optionally update user's phone from checkout form

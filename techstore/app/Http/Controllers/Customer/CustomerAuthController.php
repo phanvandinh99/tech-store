@@ -44,8 +44,8 @@ class CustomerAuthController extends Controller
             return back()->withErrors(['email' => 'Tài khoản admin không thể đăng nhập tại đây.'])->withInput();
         }
 
-        // Đăng nhập
-        Auth::login($user, $request->has('remember'));
+        // Đăng nhập với guard customer
+        Auth::guard('customer')->login($user, $request->has('remember'));
         $request->session()->regenerate();
         
         return redirect()->intended(route('home'))->with('success', 'Đăng nhập thành công!');
@@ -72,14 +72,14 @@ class CustomerAuthController extends Controller
             'trang_thai' => 'active',
         ]);
 
-        Auth::login($user);
+        Auth::guard('customer')->login($user);
 
         return redirect()->route('home')->with('success', 'Đăng ký thành công!');
     }
 
     public function logout(Request $request)
     {
-        Auth::logout();
+        Auth::guard('customer')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

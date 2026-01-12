@@ -56,9 +56,9 @@
                     <div class="checkout-form">
                         <h3 class="mb-4">Thông tin giao hàng</h3>
                         
-                        @auth
+                        @auth('customer')
                             @php
-                                $user = Auth::user();
+                                $user = Auth::guard('customer')->user();
                             @endphp
                             <div class="mb-3">
                                 <label class="form-label">Họ và tên <span class="text-danger">*</span></label>

@@ -10,8 +10,8 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        // Nếu chưa đăng nhập
-        if (!auth()->check()) {
+        // Kiểm tra đăng nhập với guard admin
+        if (!auth('admin')->check()) {
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,
@@ -23,8 +23,8 @@ class AdminMiddleware
         }
 
         // Nếu đã đăng nhập nhưng không phải admin
-        if (!auth()->user()->isAdmin()) {
-            auth()->logout();
+        if (!auth('admin')->user()->isAdmin()) {
+            auth('admin')->logout();
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,

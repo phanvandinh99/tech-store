@@ -55,9 +55,9 @@
                             <li class="menu-item-has-children">
                                 <a href="#">Tài khoản</a>
                                 <ul class="sub-menu">
-                                    @auth
+                                    @auth('customer')
                                         <li><a href="#">Tài khoản của tôi</a></li>
-                                        <li><a href="#">Đơn hàng</a></li>
+                                        <li><a href="{{ route('orders.index') }}">Đơn hàng</a></li>
                                         <li><a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Đăng xuất</a></li>
                                         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                             @csrf

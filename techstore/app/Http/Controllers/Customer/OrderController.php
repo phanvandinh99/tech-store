@@ -11,7 +11,7 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $user = Auth::user();
+        $user = Auth::guard('customer')->user();
         
         $query = DonHang::with(['chiTietDonHangs.bienThe.sanPham.danhMuc'])
             ->where('nguoi_dung_id', $user->id);
@@ -54,7 +54,7 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        $user = Auth::user();
+        $user = Auth::guard('customer')->user();
         
         $order = DonHang::with([
             'chiTietDonHangs.bienThe.sanPham.danhMuc',

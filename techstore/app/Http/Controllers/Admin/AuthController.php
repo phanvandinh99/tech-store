@@ -51,8 +51,8 @@ class AuthController extends Controller
             ]);
         }
 
-        // Đăng nhập
-        Auth::login($user, $request->boolean('remember'));
+        // Đăng nhập với guard admin
+        Auth::guard('admin')->login($user, $request->boolean('remember'));
         $request->session()->regenerate();
         
         return redirect()->intended(route('admin.dashboard'));
@@ -60,7 +60,7 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
+        Auth::guard('admin')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect()->route('admin.login');

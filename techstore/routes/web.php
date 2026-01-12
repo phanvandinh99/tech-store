@@ -39,8 +39,8 @@ Route::prefix('checkout')->name('checkout.')->group(function () {
     Route::post('/', [CheckoutController::class, 'store'])->name('store');
 });
 
-// Customer Orders Routes (requires authentication)
-Route::middleware('auth')->group(function () {
+// Customer Orders Routes (requires customer authentication)
+Route::middleware('auth:customer')->group(function () {
     Route::prefix('orders')->name('orders.')->group(function () {
         Route::get('/', [OrderController::class, 'index'])->name('index');
         Route::get('/{id}', [OrderController::class, 'show'])->name('show');
@@ -71,7 +71,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Protected admin routes
-    Route::middleware(['auth', 'admin'])->group(function () {
+    Route::middleware(['auth:admin', 'admin'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         // Danh mục

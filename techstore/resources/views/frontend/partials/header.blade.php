@@ -151,8 +151,8 @@
                                                     <ul>
                                                         <li><a href="{{ route('cart.index') }}">Giỏ hàng</a></li>
                                                         <li><a href="{{ route('checkout.index') }}">Thanh toán</a></li>
-                                                        @auth
-                                                                <li><a href="#">{{ Auth::user()->ten }}</a></li>
+                                                        @auth('customer')
+                                                                <li><a href="#">{{ Auth::guard('customer')->user()->ten }}</a></li>
                                                                 <li><a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Đăng xuất</a></li>
                                                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                                                     @csrf
@@ -175,15 +175,15 @@
                     <div class="col-lg-3 col-md-7 col-6">
                         <div class="header_configure_area">
                             <div class="header_wishlist header_user_account" style="position: relative;">
-                                @auth
+                                @auth('customer')
                                     <a href="javascript:void(0)" class="user_dropdown_toggle">
                                         <i class="fa fa-user-circle" id="IconUser"></i>
-                                        <span class="user_name" style="display: none;">{{ Auth::user()->ten }}</span>
+                                        <span class="user_name" style="display: none;">{{ Auth::guard('customer')->user()->ten }}</span>
                                     </a>
                                     <ul id="Sub">
                                         <li class="user-info">
-                                            <div class="user-name">{{ Auth::user()->ten }}</div>
-                                            <div class="user-email">{{ Auth::user()->email }}</div>
+                                            <div class="user-name">{{ Auth::guard('customer')->user()->ten }}</div>
+                                            <div class="user-email">{{ Auth::guard('customer')->user()->email }}</div>
                                         </li>
                                         <li><a href="#">
                                             <i class="fa fa-user"></i>Tài khoản của tôi</a></li>
