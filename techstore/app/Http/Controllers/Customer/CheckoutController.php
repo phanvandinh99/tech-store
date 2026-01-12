@@ -70,29 +70,17 @@ class CheckoutController extends Controller
         }
 
         $donHang = DB::transaction(function () use ($request, $cart, $total) {
-            // Find or create nguoidung record if user is logged in
-            $nguoidungId = null;
+            // Get nguoi_dung_id if user is logged in
+            $nguoiDungId = null;
             if (Auth::check()) {
-                try {
-                    $user = Auth::user();
-                    // Find existing nguoidung first to preserve existing data
-                    $existingNguoiDung = NguoiDung::where('email', $user->email)->first();
-                    
-                    // Use updateOrCreate to handle both create and update cases
-                    $nguoiDung = NguoiDung::updateOrCreate(
-                        ['email' => $user->email],
-                        [
-                            'ten' => $user->name,
-                            'mat_khau' => $user->password, // Store hashed password
-                            'sdt' => $existingNguoiDung->sdt ?? null, // Keep existing if updating
-                            'dia_chi' => $existingNguoiDung->dia_chi ?? null, // Keep existing if updating
-                        ]
-                    );
-                    $nguoidungId = $nguoiDung->id;
-                } catch (\Exception $e) {
-                    // If error creating nguoidung, set to null (allow guest checkout)
-                    \Log::warning('Failed to create/find nguoidung for user: ' . ($user->email ?? 'unknown'), ['error' => $e->getMessage()]);
-                    $nguoidungId = null;
+                $user = Auth::user();
+                // Auth::user() already returns NguoiDung model, so we can use its id directly
+                $nguoiDungId = $user->id;
+                
+                // Optionally update user's phone from checkout form
+                if ($request->dien_thoai && $request->dien_thoai != $user->sdt) {
+                    $user->sdt = $request->dien_thoai;
+                    $user->save();
                 }
             }
 
@@ -104,7 +92,7 @@ class CheckoutController extends Controller
             // Create order
             $donHang = DonHang::create([
                 'ma_don_hang' => $maDonHang,
-                'nguoi_dung_id' => $nguoidungId,
+                'nguoi_dung_id' => $nguoiDungId,
                 'ten_khach' => $request->ho_ten,
                 'sdt_khach' => $request->dien_thoai,
                 'email_khach' => $request->email,
