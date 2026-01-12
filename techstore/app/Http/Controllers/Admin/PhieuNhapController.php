@@ -63,7 +63,25 @@ class PhieuNhapController extends Controller
     {
         $nhaCungCaps = NhaCungCap::all();
         $sanPhams = SanPham::with(['bienThes', 'danhMuc'])->get();
-        return view('admin.phieunhap.create', compact('nhaCungCaps', 'sanPhams'));
+        
+        // Format dữ liệu sản phẩm cho JavaScript
+        $sanPhamsFormatted = $sanPhams->map(function($sp) {
+            return [
+                'id' => $sp->id,
+                'ten' => $sp->ten,
+                'danh_muc' => $sp->danhMuc->ten ?? '',
+                'bien_thes' => $sp->bienThes->map(function($bt) {
+                    return [
+                        'id' => $bt->id,
+                        'sku' => $bt->sku,
+                        'gia' => $bt->gia,
+                        'so_luong_ton' => $bt->so_luong_ton
+                    ];
+                })->toArray()
+            ];
+        })->toArray();
+        
+        return view('admin.phieunhap.create', compact('nhaCungCaps', 'sanPhams', 'sanPhamsFormatted'));
     }
 
     public function store(Request $request)

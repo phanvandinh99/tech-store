@@ -104,21 +104,7 @@
 
 @push('scripts')
 <script>
-const sanPhams = @json($sanPhams->map(function($sp) {
-    return [
-        'id' => $sp->id,
-        'ten' => $sp->ten,
-        'danh_muc' => $sp->danhMuc->ten ?? '',
-        'bien_thes' => $sp->bienThes->map(function($bt) {
-            return [
-                'id' => $bt->id,
-                'sku' => $bt->sku,
-                'gia' => $bt->gia,
-                'so_luong_ton' => $bt->so_luong_ton
-            ];
-        })->toArray()
-    ];
-})->toArray());
+const sanPhams = @json($sanPhamsFormatted);
 
 let chiTietIndex = 0;
 
