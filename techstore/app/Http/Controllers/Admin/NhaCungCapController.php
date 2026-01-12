@@ -44,49 +44,93 @@ class NhaCungCapController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'ten' => 'required|string|max:150',
-            'sdt' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:150',
-            'dia_chi' => 'nullable|string',
-        ]);
+        try {
+            $validated = $request->validate([
+                'ten' => 'required|string|max:150',
+                'sdt' => 'nullable|string|max:20',
+                'email' => 'nullable|email|max:150',
+                'dia_chi' => 'nullable|string',
+            ]);
 
-        NhaCungCap::create($request->only(['ten', 'sdt', 'email', 'dia_chi']));
+            NhaCungCap::create($validated);
 
-        if ($request->ajax()) {
-            return response()->json(['success' => true, 'message' => 'Thêm nhà cung cấp thành công!']);
+            if ($request->ajax()) {
+                return response()->json(['success' => true, 'message' => 'Thêm nhà cung cấp thành công!']);
+            }
+
+            return redirect()->back()->with('success', 'Thêm nhà cung cấp thành công!');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Có lỗi xảy ra khi thêm nhà cung cấp!',
+                    'errors' => $e->errors()
+                ], 422);
+            }
+            throw $e;
         }
-
-        return redirect()->back()->with('success', 'Thêm nhà cung cấp thành công!');
     }
 
     public function update(Request $request, $id)
     {
-        $nhaCungCap = NhaCungCap::findOrFail($id);
-        
-        $request->validate([
-            'ten' => 'required|string|max:150',
-            'sdt' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:150',
-            'dia_chi' => 'nullable|string',
-        ]);
+        try {
+            $nhaCungCap = NhaCungCap::findOrFail($id);
+            
+            $validated = $request->validate([
+                'ten' => 'required|string|max:150',
+                'sdt' => 'nullable|string|max:20',
+                'email' => 'nullable|email|max:150',
+                'dia_chi' => 'nullable|string',
+            ]);
 
-        $nhaCungCap->update($request->only(['ten', 'sdt', 'email', 'dia_chi']));
+            $nhaCungCap->update($validated);
 
-        if ($request->ajax()) {
-            return response()->json(['success' => true, 'message' => 'Cập nhật nhà cung cấp thành công!']);
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => true, 'message' => 'Cập nhật nhà cung cấp thành công!']);
+            }
+
+            return redirect()->back()->with('success', 'Cập nhật nhà cung cấp thành công!');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Có lỗi xảy ra khi cập nhật nhà cung cấp!',
+                    'errors' => $e->errors()
+                ], 422);
+            }
+            throw $e;
+        } catch (\Exception $e) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Có lỗi xảy ra khi cập nhật nhà cung cấp: ' . $e->getMessage()
+                ], 500);
+            }
+            return redirect()->back()->with('error', 'Có lỗi xảy ra khi cập nhật nhà cung cấp!');
         }
-
-        return redirect()->back()->with('success', 'Cập nhật nhà cung cấp thành công!');
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        $nhaCungCap = NhaCungCap::findOrFail($id);
-        $nhaCungCap->delete();
+        try {
+            $nhaCungCap = NhaCungCap::findOrFail($id);
+            $nhaCungCap->delete();
 
-        return redirect()->route('admin.nhacungcap.index')
-            ->with('success', 'Xóa nhà cung cấp thành công!');
+            if ($request->ajax()) {
+                return response()->json(['success' => true, 'message' => 'Xóa nhà cung cấp thành công!']);
+            }
+
+            return redirect()->route('admin.nhacungcap.index')
+                ->with('success', 'Xóa nhà cung cấp thành công!');
+        } catch (\Exception $e) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Có lỗi xảy ra khi xóa nhà cung cấp!'
+                ], 500);
+            }
+            return redirect()->back()->with('error', 'Có lỗi xảy ra khi xóa nhà cung cấp!');
+        }
     }
 }
 

@@ -211,18 +211,44 @@ function loadData() {
     
     fetch(`{{ route('admin.nhacungcap.index') }}?${params}`, {
         headers: {
-            'X-Requested-With': 'XMLHttpRequest'
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
         }
     })
-    .then(response => response.json())
+    .then(response => {
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                        return;
+                    }
+                    throw new Error(data.message || 'Network response was not ok');
+                });
+            }
+            return response.json();
+        } else {
+            throw new Error('Response is not JSON');
+        }
+    })
     .then(data => {
-        document.getElementById('tableContainer').innerHTML = data.html;
-        document.getElementById('paginationContainer').innerHTML = data.pagination;
+        if (data && data.redirect) {
+            window.location.href = data.redirect;
+            return;
+        }
+        if (data && data.html) {
+            document.getElementById('tableContainer').innerHTML = data.html;
+        }
+        if (data && data.pagination) {
+            document.getElementById('paginationContainer').innerHTML = data.pagination;
+        }
         document.getElementById('loadingOverlay').classList.remove('active');
     })
     .catch(error => {
         console.error('Error:', error);
         document.getElementById('loadingOverlay').classList.remove('active');
+        alert('Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại!');
     });
 }
 
@@ -247,36 +273,93 @@ document.getElementById('addNhaCungCapForm').addEventListener('submit', function
     e.preventDefault();
     
     const formData = new FormData(this);
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Đang xử lý...';
     
     fetch('{{ route('admin.nhacungcap.store') }}', {
         method: 'POST',
         body: formData,
         headers: {
             'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'X-Requested-With': 'XMLHttpRequest',
             'Accept': 'application/json'
         }
     })
-    .then(response => response.json())
+    .then(response => {
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                        return;
+                    }
+                    throw new Error(data.message || 'Network response was not ok');
+                });
+            }
+            return response.json();
+        } else {
+            return response.text().then(text => {
+                throw new Error('Response is not JSON: ' + text.substring(0, 100));
+            });
+        }
+    })
     .then(data => {
+        if (!data) return;
+        if (data.redirect) {
+            window.location.href = data.redirect;
+            return;
+        }
         if (data.success) {
             document.getElementById('addNhaCungCapModal').querySelector('.btn-close').click();
             this.reset();
             loadData();
+            if (typeof showToast === 'function') {
+                showToast('success', data.message || 'Thêm nhà cung cấp thành công!');
+            }
+        } else {
+            let errorMsg = data.message || 'Có lỗi xảy ra!';
+            if (data.errors) {
+                errorMsg += '\n' + Object.values(data.errors).flat().join('\n');
+            }
+            alert(errorMsg);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Có lỗi xảy ra!');
+        alert('Có lỗi xảy ra khi thêm nhà cung cấp!');
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
     });
 });
 
-// Sửa nhà cung cấp
+// Sửa nhà cung cấp - từ data attributes (cách mới, an toàn hơn)
+function editNhaCungCapFromButton(button) {
+    const id = button.getAttribute('data-edit-id');
+    const data = {
+        ten: button.getAttribute('data-edit-ten') || '',
+        sdt: button.getAttribute('data-edit-sdt') || '',
+        email: button.getAttribute('data-edit-email') || '',
+        dia_chi: button.getAttribute('data-edit-diachi') || ''
+    };
+    editNhaCungCap(id, data);
+}
+
+// Sửa nhà cung cấp - function gốc (giữ lại để tương thích)
 function editNhaCungCap(id, data) {
     const modal = new bootstrap.Modal(document.getElementById('editNhaCungCapModal'));
     const form = document.getElementById('editNhaCungCapForm');
     
-    form.action = `/admin/nhacungcap/${id}`;
-    document.getElementById('edit_ten').value = data.ten;
+    // Sử dụng route helper hoặc tạo URL đúng cách
+    const updateUrl = `{{ url('/admin/nhacungcap') }}/${id}`;
+    form.setAttribute('data-action', updateUrl);
+    form.action = updateUrl;
+    
+    document.getElementById('edit_ten').value = data.ten || '';
     document.getElementById('edit_sdt').value = data.sdt || '';
     document.getElementById('edit_email').value = data.email || '';
     document.getElementById('edit_dia_chi').value = data.dia_chi || '';
@@ -289,25 +372,87 @@ document.getElementById('editNhaCungCapForm').addEventListener('submit', functio
     
     const formData = new FormData(this);
     formData.append('_method', 'PUT');
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Đang xử lý...';
     
-    fetch(this.action, {
+    // Lấy URL từ action hoặc data-action attribute
+    const actionUrl = this.action || this.getAttribute('data-action');
+    if (!actionUrl) {
+        alert('Không tìm thấy URL cập nhật!');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+        return;
+    }
+    
+    fetch(actionUrl, {
         method: 'POST',
         body: formData,
         headers: {
             'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'X-Requested-With': 'XMLHttpRequest',
             'Accept': 'application/json'
         }
     })
-    .then(response => response.json())
+    .then(async response => {
+        const contentType = response.headers.get('content-type');
+        
+        // Clone response để có thể đọc nhiều lần nếu cần
+        const clonedResponse = response.clone();
+        
+        // Kiểm tra content-type trước
+        if (!contentType || !contentType.includes('application/json')) {
+            const text = await clonedResponse.text();
+            console.error('Unexpected content-type:', contentType, 'Response:', text.substring(0, 200));
+            throw new Error('Response is not JSON. Content-Type: ' + contentType);
+        }
+        
+        // Parse JSON
+        try {
+            const data = await response.json();
+            if (!response.ok) {
+                if (data.redirect) {
+                    window.location.href = data.redirect;
+                    return null;
+                }
+                throw new Error(data.message || 'Network response was not ok');
+            }
+            return data;
+        } catch (e) {
+            // Nếu parse JSON thất bại, lấy text để debug
+            const text = await clonedResponse.text();
+            console.error('JSON parse error:', e, 'Response text:', text.substring(0, 200));
+            throw new Error('Invalid JSON response: ' + text.substring(0, 100));
+        }
+    })
     .then(data => {
+        if (!data) return;
+        if (data.redirect) {
+            window.location.href = data.redirect;
+            return;
+        }
         if (data.success) {
             document.getElementById('editNhaCungCapModal').querySelector('.btn-close').click();
             loadData();
+            if (typeof showToast === 'function') {
+                showToast('success', data.message || 'Cập nhật nhà cung cấp thành công!');
+            }
+        } else {
+            let errorMsg = data.message || 'Có lỗi xảy ra!';
+            if (data.errors) {
+                errorMsg += '\n' + Object.values(data.errors).flat().join('\n');
+            }
+            alert(errorMsg);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Có lỗi xảy ra!');
+        alert('Có lỗi xảy ra khi cập nhật nhà cung cấp: ' + error.message);
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
     });
 });
 
@@ -319,15 +464,47 @@ function deleteNhaCungCap(id) {
         method: 'DELETE',
         headers: {
             'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'X-Requested-With': 'XMLHttpRequest',
             'Accept': 'application/json'
         }
     })
     .then(response => {
-        if (response.ok) {
-            loadData();
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                        return;
+                    }
+                    throw new Error(data.message || 'Network response was not ok');
+                });
+            }
+            return response.json();
         } else {
-            alert('Có lỗi xảy ra!');
+            return response.text().then(text => {
+                throw new Error('Response is not JSON');
+            });
         }
+    })
+    .then(data => {
+        if (!data) return;
+        if (data.redirect) {
+            window.location.href = data.redirect;
+            return;
+        }
+        if (data.success) {
+            loadData();
+            if (typeof showToast === 'function') {
+                showToast('success', data.message || 'Xóa nhà cung cấp thành công!');
+            }
+        } else {
+            alert(data.message || 'Có lỗi xảy ra!');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra khi xóa nhà cung cấp!');
     });
 }
 
@@ -339,14 +516,45 @@ document.addEventListener('click', function(e) {
         
         fetch(e.target.closest('.pagination a').href, {
             headers: {
-                'X-Requested-With': 'XMLHttpRequest'
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
             }
         })
-        .then(response => response.json())
+        .then(response => {
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                            return;
+                        }
+                        throw new Error(data.message || 'Network response was not ok');
+                    });
+                }
+                return response.json();
+            } else {
+                throw new Error('Response is not JSON');
+            }
+        })
         .then(data => {
-            document.getElementById('tableContainer').innerHTML = data.html;
-            document.getElementById('paginationContainer').innerHTML = data.pagination;
+            if (!data) return;
+            if (data.redirect) {
+                window.location.href = data.redirect;
+                return;
+            }
+            if (data.html) {
+                document.getElementById('tableContainer').innerHTML = data.html;
+            }
+            if (data.pagination) {
+                document.getElementById('paginationContainer').innerHTML = data.pagination;
+            }
             document.getElementById('loadingOverlay').classList.remove('active');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('loadingOverlay').classList.remove('active');
+            alert('Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại!');
         });
     }
 });

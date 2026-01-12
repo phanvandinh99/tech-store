@@ -9,8 +9,8 @@
             <th>Đơn tối thiểu</th>
             <th>Đã dùng</th>
             <th>Thời gian</th>
-            <th width="100">Trạng thái</th>
-            <th width="120">Thao tác</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
         </tr>
     </thead>
     <tbody>

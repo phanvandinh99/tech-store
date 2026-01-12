@@ -48,12 +48,14 @@
                 </td>
                 <td>
                     <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-primary" onclick="editNhaCungCap({{ $ncc->id }}, {{ json_encode([
-                            'ten' => $ncc->ten,
-                            'sdt' => $ncc->sdt,
-                            'email' => $ncc->email,
-                            'dia_chi' => $ncc->dia_chi
-                        ]) }})" title="Sửa">
+                        <button class="btn btn-outline-primary" 
+                                data-edit-id="{{ $ncc->id }}"
+                                data-edit-ten="{{ htmlspecialchars($ncc->ten, ENT_QUOTES, 'UTF-8') }}"
+                                data-edit-sdt="{{ htmlspecialchars($ncc->sdt ?? '', ENT_QUOTES, 'UTF-8') }}"
+                                data-edit-email="{{ htmlspecialchars($ncc->email ?? '', ENT_QUOTES, 'UTF-8') }}"
+                                data-edit-diachi="{{ htmlspecialchars($ncc->dia_chi ?? '', ENT_QUOTES, 'UTF-8') }}"
+                                onclick="editNhaCungCapFromButton(this)" 
+                                title="Sửa">
                             <i class="bi bi-pencil"></i>
                         </button>
                         <button class="btn btn-outline-danger" onclick="deleteNhaCungCap({{ $ncc->id }})" title="Xóa">
