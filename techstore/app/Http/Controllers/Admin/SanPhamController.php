@@ -63,6 +63,28 @@ class SanPhamController extends Controller
 
     public function store(Request $request)
     {
+        // Filter bỏ các giá trị rỗng trong giatri_thuoctinh_ids và convert so_luong_ton của từng biến thể
+        if ($request->has('bien_the') && is_array($request->bien_the)) {
+            foreach ($request->bien_the as $index => $bt) {
+                // Filter giatri_thuoctinh_ids
+                if (isset($bt['giatri_thuoctinh_ids']) && is_array($bt['giatri_thuoctinh_ids'])) {
+                    $filtered = array_filter($bt['giatri_thuoctinh_ids'], function($value) {
+                        return !empty($value) && $value !== '';
+                    });
+                    $request->merge([
+                        "bien_the.{$index}.giatri_thuoctinh_ids" => array_values($filtered)
+                    ]);
+                }
+                
+                // Convert so_luong_ton từ string sang integer
+                if (isset($bt['so_luong_ton'])) {
+                    $request->merge([
+                        "bien_the.{$index}.so_luong_ton" => (int) $bt['so_luong_ton']
+                    ]);
+                }
+            }
+        }
+        
         $request->validate([
             'ten' => 'required|string|max:255',
             'danhmuc_id' => 'required|exists:danhmuc,id',
@@ -116,9 +138,14 @@ class SanPhamController extends Controller
                     'so_luong_ton' => $bt['so_luong_ton'],
                 ]);
 
-                // Attach giá trị thuộc tính cho biến thể
+                // Attach giá trị thuộc tính cho biến thể (filter bỏ giá trị rỗng)
                 if (isset($bt['giatri_thuoctinh_ids']) && is_array($bt['giatri_thuoctinh_ids'])) {
-                    $bienThe->giaTriThuocTinhs()->attach($bt['giatri_thuoctinh_ids']);
+                    $giatriIds = array_filter($bt['giatri_thuoctinh_ids'], function($value) {
+                        return !empty($value) && $value !== '';
+                    });
+                    if (!empty($giatriIds)) {
+                        $bienThe->giaTriThuocTinhs()->attach(array_values($giatriIds));
+                    }
                 }
 
                 // Upload ảnh cho biến thể (nếu có)
@@ -292,6 +319,21 @@ class SanPhamController extends Controller
     {
         $sanPham = SanPham::findOrFail($id);
         
+        // Filter bỏ các giá trị rỗng trong giatri_thuoctinh_ids
+        $giatriIds = $request->giatri_thuoctinh_ids ?? [];
+        $giatriIds = array_filter($giatriIds, function($value) {
+            return !empty($value) && $value !== '';
+        });
+        $giatriIds = array_values($giatriIds); // Re-index array
+        
+        // Convert so_luong_ton từ string sang integer
+        if ($request->has('so_luong_ton')) {
+            $request->merge(['so_luong_ton' => (int) $request->so_luong_ton]);
+        }
+        
+        // Merge lại vào request để validate
+        $request->merge(['giatri_thuoctinh_ids' => $giatriIds]);
+        
         $request->validate([
             'sku' => 'required|string|max:100|unique:bien_the,sku',
             'gia' => 'required|numeric|min:0',
@@ -309,8 +351,8 @@ class SanPhamController extends Controller
             'so_luong_ton' => $request->so_luong_ton,
         ]);
 
-        if ($request->giatri_thuoctinh_ids) {
-            $bienThe->giaTriThuocTinhs()->attach($request->giatri_thuoctinh_ids);
+        if (!empty($giatriIds)) {
+            $bienThe->giaTriThuocTinhs()->attach($giatriIds);
         }
 
         // Upload ảnh nếu có
@@ -326,6 +368,21 @@ class SanPhamController extends Controller
     {
         $sanPham = SanPham::findOrFail($id);
         $bienThe = BienThe::where('sanpham_id', $sanPham->id)->findOrFail($variantId);
+        
+        // Filter bỏ các giá trị rỗng trong giatri_thuoctinh_ids
+        $giatriIds = $request->giatri_thuoctinh_ids ?? [];
+        $giatriIds = array_filter($giatriIds, function($value) {
+            return !empty($value) && $value !== '';
+        });
+        $giatriIds = array_values($giatriIds); // Re-index array
+        
+        // Convert so_luong_ton từ string sang integer
+        if ($request->has('so_luong_ton')) {
+            $request->merge(['so_luong_ton' => (int) $request->so_luong_ton]);
+        }
+        
+        // Merge lại vào request để validate
+        $request->merge(['giatri_thuoctinh_ids' => $giatriIds]);
         
         $request->validate([
             'sku' => 'required|string|max:100|unique:bien_the,sku,' . $bienThe->id,
@@ -343,9 +400,9 @@ class SanPhamController extends Controller
             'so_luong_ton' => $request->so_luong_ton,
         ]);
 
-        // Sync giá trị thuộc tính
-        if ($request->has('giatri_thuoctinh_ids')) {
-            $bienThe->giaTriThuocTinhs()->sync($request->giatri_thuoctinh_ids);
+        // Sync giá trị thuộc tính (chỉ sync các giá trị không rỗng)
+        if (!empty($giatriIds)) {
+            $bienThe->giaTriThuocTinhs()->sync($giatriIds);
         } else {
             $bienThe->giaTriThuocTinhs()->detach();
         }
