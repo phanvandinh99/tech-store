@@ -85,7 +85,8 @@ class SanPhamController extends Controller
             }
         }
         
-        $request->validate([
+        // Validate cơ bản trước
+        $rules = [
             'ten' => 'required|string|max:255',
             'danhmuc_id' => 'required|exists:danhmuc,id',
             'thuong_hieu_id' => 'nullable|exists:thuong_hieu,id',
@@ -100,9 +101,25 @@ class SanPhamController extends Controller
             'bien_the.*.so_luong_ton' => 'required|integer|min:0',
             'bien_the.*.giatri_thuoctinh_ids' => 'nullable|array',
             'bien_the.*.giatri_thuoctinh_ids.*' => 'exists:giatri_thuoctinh,id',
-            'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+        ];
+
+        // Chỉ validate ảnh nếu có file được upload
+        if ($request->hasFile('images')) {
+            $rules['images'] = 'array';
+            $rules['images.*'] = 'image|mimes:jpeg,png,jpg,gif,webp|max:2048';
+        }
+
+        // Validate ảnh cho từng biến thể nếu có
+        if ($request->has('bien_the') && is_array($request->bien_the)) {
+            foreach ($request->bien_the as $index => $bt) {
+                if (isset($bt['images']) && $request->hasFile("bien_the.{$index}.images")) {
+                    $rules["bien_the.{$index}.images"] = 'array';
+                    $rules["bien_the.{$index}.images.*"] = 'image|mimes:jpeg,png,jpg,gif,webp|max:2048';
+                }
+            }
+        }
+
+        $request->validate($rules);
 
         DB::transaction(function () use ($request) {
             // Tạo slug từ tên sản phẩm
@@ -130,9 +147,12 @@ class SanPhamController extends Controller
 
             // Tạo biến thể
             foreach ($request->bien_the as $index => $bt) {
+                // Tạo SKU unique nếu trùng
+                $sku = $this->generateUniqueSku($bt['sku'] ?? null, $sanPham->id);
+                
                 $bienThe = BienThe::create([
                     'sanpham_id' => $sanPham->id,
-                    'sku' => $bt['sku'],
+                    'sku' => $sku,
                     'gia' => $bt['gia'],
                     'gia_von' => $bt['gia_von'],
                     'so_luong_ton' => $bt['so_luong_ton'],
@@ -298,14 +318,38 @@ class SanPhamController extends Controller
     {
         $sanPham = SanPham::findOrFail($id);
         
-        $request->validate([
-            'images' => 'required|array',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'bien_the_id' => 'nullable|exists:bien_the,id',
-        ]);
+        // Kiểm tra có file được upload không
+        if (!$request->hasFile('images')) {
+            return redirect()->back()->with('error', 'Vui lòng chọn ít nhất một ảnh để upload!');
+        }
+
+        $files = $request->file('images');
+        
+        // Lọc bỏ các file null hoặc không hợp lệ
+        $validFiles = array_filter($files, function($file) {
+            return $file && $file->isValid();
+        });
+
+        if (empty($validFiles)) {
+            return redirect()->back()->with('error', 'Không có file ảnh hợp lệ nào được chọn!');
+        }
+
+        // Validate từng file
+        foreach ($validFiles as $index => $file) {
+            $request->validate([
+                "images.{$index}" => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            ]);
+        }
+
+        // Validate bien_the_id nếu có
+        if ($request->has('bien_the_id') && $request->bien_the_id) {
+            $request->validate([
+                'bien_the_id' => 'exists:bien_the,id',
+            ]);
+        }
 
         $this->uploadImages(
-            $request->file('images'),
+            $validFiles,
             $sanPham->id,
             $request->bien_the_id,
             false
@@ -335,7 +379,7 @@ class SanPhamController extends Controller
         $request->merge(['giatri_thuoctinh_ids' => $giatriIds]);
         
         $request->validate([
-            'sku' => 'required|string|max:100|unique:bien_the,sku',
+            'sku' => 'nullable|string|max:100',
             'gia' => 'required|numeric|min:0',
             'gia_von' => 'required|numeric|min:0',
             'so_luong_ton' => 'required|integer|min:0',
@@ -343,9 +387,12 @@ class SanPhamController extends Controller
             'giatri_thuoctinh_ids.*' => 'exists:giatri_thuoctinh,id',
         ]);
 
+        // Tạo SKU unique nếu trùng
+        $sku = $this->generateUniqueSku($request->sku ?? null, $sanPham->id);
+
         $bienThe = BienThe::create([
             'sanpham_id' => $sanPham->id,
-            'sku' => $request->sku,
+            'sku' => $sku,
             'gia' => $request->gia,
             'gia_von' => $request->gia_von,
             'so_luong_ton' => $request->so_luong_ton,
@@ -385,7 +432,7 @@ class SanPhamController extends Controller
         $request->merge(['giatri_thuoctinh_ids' => $giatriIds]);
         
         $request->validate([
-            'sku' => 'required|string|max:100|unique:bien_the,sku,' . $bienThe->id,
+            'sku' => 'nullable|string|max:100',
             'gia' => 'required|numeric|min:0',
             'gia_von' => 'required|numeric|min:0',
             'so_luong_ton' => 'required|integer|min:0',
@@ -393,8 +440,11 @@ class SanPhamController extends Controller
             'giatri_thuoctinh_ids.*' => 'exists:giatri_thuoctinh,id',
         ]);
 
+        // Tạo SKU unique nếu trùng (trừ SKU hiện tại của biến thể này)
+        $sku = $this->generateUniqueSku($request->sku ?? null, $bienThe->sanpham_id, $bienThe->id);
+
         $bienThe->update([
-            'sku' => $request->sku,
+            'sku' => $sku,
             'gia' => $request->gia,
             'gia_von' => $request->gia_von,
             'so_luong_ton' => $request->so_luong_ton,
@@ -430,5 +480,65 @@ class SanPhamController extends Controller
         }
         
         return redirect()->back()->with('success', 'Xóa biến thể thành công!');
+    }
+
+    /**
+     * Tạo SKU unique tự động nếu trùng
+     * 
+     * @param string|null $inputSku SKU người dùng nhập (có thể null)
+     * @param int $sanphamId ID sản phẩm
+     * @param int|null $excludeId ID biến thể cần loại trừ (khi update)
+     * @return string SKU unique
+     */
+    private function generateUniqueSku(?string $inputSku, int $sanphamId, ?int $excludeId = null): string
+    {
+        // Nếu không có SKU từ input, tạo SKU mặc định
+        if (empty($inputSku)) {
+            $baseSku = 'SP-' . $sanphamId . '-' . strtoupper(Str::random(6));
+        } else {
+            $baseSku = trim($inputSku);
+        }
+
+        // Kiểm tra SKU đã tồn tại chưa
+        $query = BienThe::where('sku', $baseSku);
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+
+        if (!$query->exists()) {
+            return $baseSku;
+        }
+
+        // Nếu trùng, thêm suffix ngẫu nhiên
+        $counter = 1;
+        $uniqueSku = $baseSku;
+        
+        while (true) {
+            // Thử format: SKU-RANDOM hoặc SKU-{counter}
+            if ($counter === 1) {
+                $uniqueSku = $baseSku . '-' . strtoupper(Str::random(4));
+            } else {
+                $uniqueSku = $baseSku . '-' . strtoupper(Str::random(4)) . '-' . $counter;
+            }
+
+            $checkQuery = BienThe::where('sku', $uniqueSku);
+            if ($excludeId) {
+                $checkQuery->where('id', '!=', $excludeId);
+            }
+
+            if (!$checkQuery->exists()) {
+                break;
+            }
+
+            $counter++;
+            
+            // Tránh vòng lặp vô hạn
+            if ($counter > 100) {
+                $uniqueSku = $baseSku . '-' . time() . '-' . strtoupper(Str::random(4));
+                break;
+            }
+        }
+
+        return $uniqueSku;
     }
 }
