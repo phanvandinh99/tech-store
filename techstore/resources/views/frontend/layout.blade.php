@@ -15,6 +15,68 @@
     <!-- Main Style CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     
+    <!-- Custom Product Image Styles -->
+    <style>
+        /* Đảm bảo tất cả ảnh sản phẩm có cùng chiều cao container */
+        .product_thumb {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+        }
+        
+        .product_thumb a {
+            display: block;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        .product_thumb a.primary_img,
+        .product_thumb a.secondary_img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .product_thumb a img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
+        }
+        
+        .product_thumb a.secondary_img {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .single_product:hover .product_thumb a.secondary_img {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .product_thumb {
+                height: 220px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .product_thumb {
+                height: 200px;
+            }
+        }
+    </style>
+    
     @stack('styles')
 </head>
 
