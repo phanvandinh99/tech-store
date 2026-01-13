@@ -115,7 +115,7 @@
                             <ul>
                                 <li><a href="#">Vị trí cửa hàng</a></li>
                                 <li><a href="#">Theo dõi đơn hàng</a></li>
-                                <li>Hotline: <a href="tel:+0123456789">0123456789</a></li>
+                                <li>Hotline: <a href="tel:+0329555345">0329555345</a></li>
                                 <li>Cam kết chất lượng sản phẩm</li>
                             </ul>
                         </div>
@@ -168,6 +168,7 @@
                                     </li>
                                     <li><a href="#">Liên hệ</a></li>
                                     <li><a href="#">Về chúng tôi</a></li>
+                                    <li><a href="{{ route('warranty.policy') }}">Chính Sách Bảo Hành</a></li>
                                 </ul>
                             </nav>
                         </div>
@@ -189,6 +190,8 @@
                                             <i class="fa fa-user"></i>Tài khoản của tôi</a></li>
                                         <li><a href="{{ route('orders.index') }}">
                                             <i class="fa fa-shopping-bag"></i>Đơn hàng của tôi</a></li>
+                                        <li><a href="{{ route('warranty.index') }}">
+                                            <i class="fa fa-wrench"></i>Yêu cầu bảo hành</a></li>
                                         <li><a href="#">
                                             <i class="fa fa-heart"></i>Sản phẩm yêu thích</a></li>
                                         <li><a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="logout-link">

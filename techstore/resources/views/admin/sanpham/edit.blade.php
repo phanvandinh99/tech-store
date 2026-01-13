@@ -261,15 +261,17 @@
                             <label class="form-label">Giá trị thuộc tính</label>
                             <div class="row">
                                 @foreach($thuocTinhs as $thuocTinh)
-                                <div class="col-md-6 mb-2">
-                                    <label class="form-label small"><strong>{{ $thuocTinh->ten }}</strong></label>
-                                    <select class="form-select form-select-sm" name="giatri_thuoctinh_ids[]">
-                                        <option value="">-- Chọn --</option>
-                                        @foreach($thuocTinh->giaTriThuocTinhs as $giaTri)
-                                            <option value="{{ $giaTri->id }}">{{ $giaTri->giatri }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                                    @if(!($isDienThoai && $kichThuocManHinhId && $thuocTinh->id == $kichThuocManHinhId))
+                                    <div class="col-md-6 mb-2">
+                                        <label class="form-label small"><strong>{{ $thuocTinh->ten }}</strong></label>
+                                        <select class="form-select form-select-sm" name="giatri_thuoctinh_ids[]">
+                                            <option value="">-- Chọn --</option>
+                                            @foreach($thuocTinh->giaTriThuocTinhs as $giaTri)
+                                                <option value="{{ $giaTri->id }}">{{ $giaTri->giatri }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    @endif
                                 @endforeach
                             </div>
                         </div>
@@ -387,6 +389,8 @@ const thuocTinhs = @json($thuocTinhs->mapWithKeys(function($tt) {
         })
     ]];
 }));
+const kichThuocManHinhId = {{ $kichThuocManHinhId ?? 'null' }};
+const isDienThoai = {{ $isDienThoai ? 'true' : 'false' }};
 
 function editVariant(id, variant) {
     const modal = new bootstrap.Modal(document.getElementById('editVariantModal'));
@@ -408,6 +412,13 @@ function editVariant(id, variant) {
     const selectedGiatriIds = variantData.giatri_ids || [];
     
     Object.entries(thuocTinhs).forEach(([ttId, ttData]) => {
+        const thuocTinhIdNum = parseInt(ttId);
+        
+        // Bỏ qua thuộc tính "Kích thước màn hình" nếu là điện thoại
+        if (isDienThoai && kichThuocManHinhId && thuocTinhIdNum === kichThuocManHinhId) {
+            return;
+        }
+        
         const col = document.createElement('div');
         col.className = 'col-md-6 mb-2';
         col.innerHTML = `

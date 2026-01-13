@@ -61,6 +61,7 @@
                         <div class="footer_menu">
                             <ul>
                                 <li><a href="#">Về chúng tôi</a></li>
+                                <li><a href="{{ route('warranty.policy') }}">Chính Sách Bảo Hành</a></li>
                                 <li><a href="#">Thông tin giao hàng</a></li>
                                 <li><a href="#">Sản phẩm mới</a></li>
                                 <li><a href="#">Bán chạy nhất</a></li>
@@ -109,7 +110,7 @@
                                     <img src="{{ asset('assets/img/icon/icon-phone.png') }}" alt="">
                                 </div>
                                 <div class="contact_text">
-                                    <p>Hotline miễn phí 24/24: <br> <strong>0123456789</strong></p>
+                                    <p>Hotline miễn phí 24/24: <br> <strong>0329555345</strong></p>
                                 </div>
                             </div>
                             <p>Địa chỉ của bạn tại đây. <br> contact@techstore.com</p>

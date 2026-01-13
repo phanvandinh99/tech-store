@@ -54,9 +54,11 @@
                     <h5 class="mb-3"><i class="bi bi-tags"></i> Thuộc tính sản phẩm</h5>
                     <div class="mb-3">
                         <label class="form-label">Chọn thuộc tính</label>
-                        <div class="row">
+                        <div class="row" id="thuocTinhContainer">
                             @foreach($thuocTinhs as $thuocTinh)
-                            <div class="col-md-4 mb-2">
+                            <div class="col-md-4 mb-2 thuoc-tinh-item" 
+                                 data-thuoctinh-id="{{ $thuocTinh->id }}"
+                                 @if($kichThuocManHinhId && $thuocTinh->id == $kichThuocManHinhId) data-is-kich-thuoc="true" @endif>
                                 <div class="form-check">
                                     <input class="form-check-input thuoc-tinh-checkbox" 
                                            type="checkbox" 
@@ -166,6 +168,17 @@ let bienTheIndex = 1;
 const thuocTinhs = @json($thuocTinhs->mapWithKeys(function($tt) {
     return [$tt->id => $tt->giaTriThuocTinhs->pluck('id', 'giatri')];
 }));
+const kichThuocManHinhId = {{ $kichThuocManHinhId ?? 'null' }};
+const danhMucs = @json($danhMucs->pluck('ten', 'id'));
+
+// Kiểm tra xem danh mục có phải là điện thoại không
+function isDienThoaiCategory(danhMucId) {
+    if (!danhMucId) return false;
+    const tenDanhMuc = danhMucs[danhMucId] || '';
+    return tenDanhMuc.toLowerCase().includes('điện thoại') || 
+           tenDanhMuc.toLowerCase().includes('smartphone') ||
+           tenDanhMuc.toLowerCase().includes('phone');
+}
 
 // Preview ảnh
 document.getElementById('images').addEventListener('change', function(e) {
@@ -208,8 +221,18 @@ function updateGiaTriThuocTinh(bienTheIndex) {
     
     container.innerHTML = '';
     
+    // Lấy danh mục hiện tại
+    const danhMucId = document.getElementById('danhmuc_id')?.value;
+    const isDienThoai = isDienThoaiCategory(danhMucId);
+    
     document.querySelectorAll('.thuoc-tinh-checkbox:checked').forEach(checkbox => {
-        const thuocTinhId = checkbox.value;
+        const thuocTinhId = parseInt(checkbox.value);
+        
+        // Bỏ qua thuộc tính "Kích thước màn hình" nếu là điện thoại
+        if (isDienThoai && kichThuocManHinhId && thuocTinhId === kichThuocManHinhId) {
+            return;
+        }
+        
         const giatriList = thuocTinhs[thuocTinhId] || {};
         
         const row = document.createElement('div');
@@ -226,6 +249,41 @@ function updateGiaTriThuocTinh(bienTheIndex) {
         container.appendChild(row);
     });
 }
+
+// Cập nhật lại khi thay đổi danh mục
+document.getElementById('danhmuc_id')?.addEventListener('change', function() {
+    const danhMucId = this.value;
+    const isDienThoai = isDienThoaiCategory(danhMucId);
+    
+    // Ẩn/hiện checkbox "Kích thước màn hình" dựa trên danh mục
+    document.querySelectorAll('.thuoc-tinh-item[data-is-kich-thuoc="true"]').forEach(item => {
+        if (isDienThoai) {
+            item.style.display = 'none';
+            // Bỏ chọn checkbox nếu đang được chọn
+            const checkbox = item.querySelector('.thuoc-tinh-checkbox');
+            if (checkbox && checkbox.checked) {
+                checkbox.checked = false;
+            }
+        } else {
+            item.style.display = 'block';
+        }
+    });
+    
+    updateGiaTriThuocTinhForAllVariants();
+});
+
+// Kiểm tra danh mục ban đầu khi load trang
+document.addEventListener('DOMContentLoaded', function() {
+    const danhMucId = document.getElementById('danhmuc_id')?.value;
+    if (danhMucId) {
+        const isDienThoai = isDienThoaiCategory(danhMucId);
+        document.querySelectorAll('.thuoc-tinh-item[data-is-kich-thuoc="true"]').forEach(item => {
+            if (isDienThoai) {
+                item.style.display = 'none';
+            }
+        });
+    }
+});
 
 function addBienThe() {
     const container = document.getElementById('bienTheContainer');

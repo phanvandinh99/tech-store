@@ -45,9 +45,13 @@ class YeuCauBaoHanh extends Model
     // Tạo mã yêu cầu tự động
     public static function taoMaYeuCau(): string
     {
-        $prefix = 'BH' . date('Ymd');
-        $lastId = self::whereDate('created_at', today())->count() + 1;
-        return $prefix . str_pad($lastId, 4, '0', STR_PAD_LEFT);
+        do {
+            $prefix = 'BH' . date('Ymd');
+            $lastId = self::whereDate('created_at', today())->count() + 1;
+            $maYeuCau = $prefix . str_pad($lastId, 4, '0', STR_PAD_LEFT);
+        } while (self::where('ma_yeu_cau', $maYeuCau)->exists());
+        
+        return $maYeuCau;
     }
 }
 

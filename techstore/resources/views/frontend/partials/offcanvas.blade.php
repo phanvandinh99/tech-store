@@ -18,7 +18,7 @@
                         <ul>
                             <li><a href="#">Vị trí cửa hàng</a></li>
                             <li><a href="#">Theo dõi đơn hàng</a></li>
-                            <li>Hotline: <a href="tel:+0123456789">0123456789</a></li>
+                            <li>Hotline: <a href="tel:+0329555345">0329555345</a></li>
                             <li>Cam kết chất lượng sản phẩm</li>
                         </ul>
                     </div>

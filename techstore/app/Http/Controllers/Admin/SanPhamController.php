@@ -58,7 +58,9 @@ class SanPhamController extends Controller
     {
         $danhMucs = DanhMuc::all();
         $thuocTinhs = ThuocTinh::with('giaTriThuocTinhs')->get();
-        return view('admin.sanpham.create', compact('danhMucs', 'thuocTinhs'));
+        // Tìm thuộc tính "Kích thước màn hình" để có thể filter
+        $kichThuocManHinhId = ThuocTinh::where('ten', 'Kích thước màn hình')->value('id');
+        return view('admin.sanpham.create', compact('danhMucs', 'thuocTinhs', 'kichThuocManHinhId'));
     }
 
     public function store(Request $request)
@@ -192,10 +194,18 @@ class SanPhamController extends Controller
 
     public function edit($id)
     {
-        $sanPham = SanPham::with(['thuocTinhs', 'bienThes.giaTriThuocTinhs', 'anhSanPhams'])->findOrFail($id);
+        $sanPham = SanPham::with(['thuocTinhs', 'bienThes.giaTriThuocTinhs', 'anhSanPhams', 'danhMuc'])->findOrFail($id);
         $danhMucs = DanhMuc::all();
         $thuocTinhs = ThuocTinh::with('giaTriThuocTinhs')->get();
-        return view('admin.sanpham.edit', compact('sanPham', 'danhMucs', 'thuocTinhs'));
+        // Tìm thuộc tính "Kích thước màn hình" để có thể filter
+        $kichThuocManHinhId = ThuocTinh::where('ten', 'Kích thước màn hình')->value('id');
+        // Kiểm tra xem danh mục có phải là điện thoại không (dựa vào tên danh mục)
+        $isDienThoai = $sanPham->danhMuc && (
+            stripos($sanPham->danhMuc->ten, 'điện thoại') !== false || 
+            stripos($sanPham->danhMuc->ten, 'smartphone') !== false ||
+            stripos($sanPham->danhMuc->ten, 'phone') !== false
+        );
+        return view('admin.sanpham.edit', compact('sanPham', 'danhMucs', 'thuocTinhs', 'kichThuocManHinhId', 'isDienThoai'));
     }
 
     public function update(Request $request, $id)

@@ -17,12 +17,16 @@ use App\Http\Controllers\Customer\CartController;
 use App\Http\Controllers\Customer\CheckoutController;
 use App\Http\Controllers\Customer\CustomerAuthController;
 use App\Http\Controllers\Customer\OrderController;
+use App\Http\Controllers\Customer\WarrantyController;
 use Illuminate\Support\Facades\Route;
 
 // Customer/Frontend Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/san-pham', [ProductController::class, 'index'])->name('products.index');
 Route::get('/san-pham/{id}', [ProductController::class, 'show'])->name('products.show');
+Route::get('/chinh-sach-bao-hanh', function() {
+    return view('frontend.pages.warranty-policy');
+})->name('warranty.policy');
 
 // Cart Routes
 Route::prefix('cart')->name('cart.')->group(function () {
@@ -46,6 +50,14 @@ Route::middleware('auth:customer')->group(function () {
         Route::get('/{id}', [OrderController::class, 'show'])->name('show');
         Route::post('/{id}/cancel', [OrderController::class, 'cancel'])->name('cancel');
         Route::put('/{id}', [OrderController::class, 'update'])->name('update');
+    });
+
+    // Warranty Routes
+    Route::prefix('warranty')->name('warranty.')->group(function () {
+        Route::get('/', [WarrantyController::class, 'index'])->name('index');
+        Route::get('/create', [WarrantyController::class, 'create'])->name('create');
+        Route::post('/', [WarrantyController::class, 'store'])->name('store');
+        Route::get('/{id}', [WarrantyController::class, 'show'])->name('show');
     });
 });
 
