@@ -378,6 +378,17 @@
 
                 <!-- Action Buttons -->
                 <div class="action-buttons">
+                    @if($order->trang_thai == 'cho_xac_nhan')
+                        <button type="button" class="btn btn-warning w-100 mb-2" data-bs-toggle="modal" data-bs-target="#updateOrderModal">
+                            <i class="fa fa-edit"></i> Cập nhật thông tin
+                        </button>
+                        <form action="{{ route('orders.cancel', $order->id) }}" method="POST" class="w-100" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?');">
+                            @csrf
+                            <button type="submit" class="btn btn-danger w-100 mb-2">
+                                <i class="fa fa-times"></i> Hủy đơn hàng
+                            </button>
+                        </form>
+                    @endif
                     <a href="{{ route('orders.index') }}" class="btn btn-outline-secondary w-100">
                         <i class="fa fa-arrow-left"></i> Quay lại danh sách
                     </a>
@@ -387,4 +398,64 @@
     </div>
 </div>
 <!--order detail area end-->
+
+<!-- Update Order Modal -->
+@if($order->trang_thai == 'cho_xac_nhan')
+<div class="modal fade" id="updateOrderModal" tabindex="-1" aria-labelledby="updateOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateOrderModalLabel">Cập nhật thông tin đơn hàng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('orders.update', $order->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('ho_ten') is-invalid @enderror" 
+                               name="ho_ten" value="{{ old('ho_ten', $order->ten_khach) }}" required>
+                        @error('ho_ten')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control @error('email') is-invalid @enderror" 
+                               name="email" value="{{ old('email', $order->email_khach) }}" required>
+                        @error('email')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('dien_thoai') is-invalid @enderror" 
+                               name="dien_thoai" value="{{ old('dien_thoai', $order->sdt_khach) }}" required>
+                        @error('dien_thoai')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Địa chỉ giao hàng <span class="text-danger">*</span></label>
+                        <textarea class="form-control @error('dia_chi') is-invalid @enderror" 
+                                  name="dia_chi" rows="3" required>{{ old('dia_chi', $order->dia_chi_khach) }}</textarea>
+                        @error('dia_chi')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Ghi chú (tùy chọn)</label>
+                        <textarea class="form-control" name="ghi_chu" rows="3">{{ old('ghi_chu', $order->ghi_chu) }}</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
 @endsection

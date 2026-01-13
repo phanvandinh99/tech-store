@@ -62,10 +62,48 @@ class DonHangController extends Controller
             'trang_thai' => 'required|in:cho_xac_nhan,da_xac_nhan,dang_giao,hoan_thanh,da_huy',
         ]);
 
-        $donHang->update(['trang_thai' => $request->trang_thai]);
+        $oldStatus = $donHang->trang_thai;
+        $newStatus = $request->trang_thai;
+
+        // Nếu chuyển sang trạng thái "da_huy" và trước đó chưa phải "da_huy", cần hoàn lại số lượng tồn kho
+        if ($newStatus === 'da_huy' && $oldStatus !== 'da_huy') {
+            foreach ($donHang->chiTietDonHangs as $item) {
+                $variant = $item->bienThe;
+                if ($variant) {
+                    $variant->so_luong_ton += $item->so_luong;
+                    $variant->save();
+                }
+            }
+        }
+
+        $donHang->update(['trang_thai' => $newStatus]);
 
         return redirect()->back()
             ->with('success', 'Cập nhật trạng thái đơn hàng thành công!');
+    }
+
+    public function update(Request $request, DonHang $donHang)
+    {
+        $request->validate([
+            'ten_khach' => 'required|string|max:255',
+            'email_khach' => 'required|email|max:255',
+            'sdt_khach' => 'required|string|max:20',
+            'dia_chi_khach' => 'required|string|max:500',
+            'phuong_thuc_thanh_toan' => 'nullable|string|max:50',
+            'ghi_chu' => 'nullable|string|max:1000',
+        ]);
+
+        $donHang->update([
+            'ten_khach' => $request->ten_khach,
+            'email_khach' => $request->email_khach,
+            'sdt_khach' => $request->sdt_khach,
+            'dia_chi_khach' => $request->dia_chi_khach,
+            'phuong_thuc_thanh_toan' => $request->phuong_thuc_thanh_toan ?? $donHang->phuong_thuc_thanh_toan,
+            'ghi_chu' => $request->ghi_chu ?? null,
+        ]);
+
+        return redirect()->back()
+            ->with('success', 'Cập nhật thông tin đơn hàng thành công!');
     }
 }
 

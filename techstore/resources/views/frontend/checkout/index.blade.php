@@ -56,6 +56,14 @@
                     <div class="checkout-form">
                         <h3 class="mb-4">Thông tin giao hàng</h3>
                         
+                        @guest('customer')
+                            <div class="alert alert-info mb-3">
+                                <i class="bi bi-info-circle"></i> 
+                                <strong>Bạn chưa đăng nhập?</strong> Bạn vẫn có thể đặt hàng mà không cần đăng nhập. 
+                                <a href="{{ route('customer.login') }}" class="alert-link">Đăng nhập</a> để theo dõi đơn hàng dễ dàng hơn.
+                            </div>
+                        @endguest
+                        
                         @auth('customer')
                             @php
                                 $user = Auth::guard('customer')->user();

@@ -130,8 +130,14 @@ class CheckoutController extends Controller
         // Clear cart
         session(['cart' => []]);
 
+        $message = 'Đặt hàng thành công! Mã đơn hàng: ' . $donHang->ma_don_hang . '. Chúng tôi sẽ liên hệ với bạn sớm nhất.';
+        
+        if (!Auth::guard('customer')->check()) {
+            $message .= ' Vui lòng lưu lại mã đơn hàng để tra cứu khi cần.';
+        }
+
         return redirect()->route('home')
-            ->with('success', 'Đặt hàng thành công! Mã đơn hàng: #' . $donHang->id . '. Chúng tôi sẽ liên hệ với bạn sớm nhất.');
+            ->with('success', $message);
     }
 }
 

@@ -44,6 +44,8 @@ Route::middleware('auth:customer')->group(function () {
     Route::prefix('orders')->name('orders.')->group(function () {
         Route::get('/', [OrderController::class, 'index'])->name('index');
         Route::get('/{id}', [OrderController::class, 'show'])->name('show');
+        Route::post('/{id}/cancel', [OrderController::class, 'cancel'])->name('cancel');
+        Route::put('/{id}', [OrderController::class, 'update'])->name('update');
     });
 });
 
@@ -96,6 +98,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('donhang', [DonHangController::class, 'index'])->name('donhang.index');
         Route::get('donhang/{donHang}', [DonHangController::class, 'show'])->name('donhang.show');
         Route::patch('donhang/{donHang}/status', [DonHangController::class, 'updateStatus'])->name('donhang.updateStatus');
+        Route::put('donhang/{donHang}', [DonHangController::class, 'update'])->name('donhang.update');
 
         // Nhập hàng
         Route::get('phieunhap', [App\Http\Controllers\Admin\PhieuNhapController::class, 'index'])->name('phieunhap.index');
