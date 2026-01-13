@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 12, 2026 at 01:31 PM
+-- Generation Time: Jan 13, 2026 at 02:21 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -77,7 +77,21 @@ INSERT INTO `anh_sanpham` (`id`, `sanpham_id`, `bien_the_id`, `duong_dan`, `la_a
 (17, 10, NULL, 'products/tYHyxVL6Tj8Al2W4LNvd6P9Qvjal7b88kON0Oz8D.jpg', 1, 0, '2026-01-12 05:16:36'),
 (18, 11, 16, 'products/smWlgO1OVFbr0649DANV2BYGF9iCnBd25ZM5czAf.png', 1, 0, '2026-01-12 05:30:30'),
 (19, 11, 17, 'products/HrVFrQVPtliGznKUCxjG2KQz7RwLEGK5cHygkXe3.png', 0, 0, '2026-01-12 05:30:30'),
-(20, 11, NULL, 'products/T8L94PlT8ksoCYxKsNggPaFsKrExPswVtx9vjYoJ.png', 1, 0, '2026-01-12 05:30:31');
+(20, 11, NULL, 'products/T8L94PlT8ksoCYxKsNggPaFsKrExPswVtx9vjYoJ.png', 1, 0, '2026-01-12 05:30:31'),
+(21, 12, 18, 'products/WipBjoQ7A5vtWqSP6qZy74Z6BpeHM8xi9bF3bFwa.jpg', 1, 0, '2026-01-13 06:01:12'),
+(22, 12, NULL, 'products/AGGHF6FdwkXNw8Th7MgYlEZd0e5kjwOP2wO987Rn.jpg', 1, 0, '2026-01-13 06:01:12'),
+(23, 13, 19, 'products/lEam6u1CpCzXMSGFsOcigww1vNgJ5xKprVlGW91f.jpg', 1, 0, '2026-01-13 06:05:04'),
+(24, 13, NULL, 'products/MVmCY5hKMKoWntsJf3oZPOUtdRljdNYVkYhc3xHE.jpg', 1, 0, '2026-01-13 06:05:04'),
+(25, 14, 20, 'products/4ks6iLcwmJBlwBog3nTQNzdrlQCU0zG70Kph5d8P.jpg', 1, 0, '2026-01-13 06:07:16'),
+(26, 14, NULL, 'products/jbt0tRuqiYkGcABHpKKVpxgIakE9eHsupUUOh6Su.jpg', 1, 0, '2026-01-13 06:07:16'),
+(27, 4, NULL, 'products/1kbfgLBpPmfj36aNOaW4TDcVm4zUmUVIpv6cNCcv.jpg', 0, 0, '2026-01-13 06:08:11'),
+(28, 15, 21, 'products/G9yK1tbVo4sxgzsJQr1g61Ro00DmZORG7K4CYsrC.jpg', 1, 0, '2026-01-13 06:13:29'),
+(29, 15, NULL, 'products/OOCCSfmrYIAEyzDb2UQfgaaBBmswjE4RYOKtN77x.jpg', 1, 0, '2026-01-13 06:13:29'),
+(30, 16, 22, 'products/EA7M2Adi75r46gxmEyX6IppqXy7QSiJB9k7zyJkl.png', 1, 0, '2026-01-13 06:16:04'),
+(31, 16, NULL, 'products/E3e2B3fqSjAfOMXTrprNDceGRPsCUS8OujYvgfR8.jpg', 1, 0, '2026-01-13 06:16:04'),
+(32, 17, 23, 'products/KPnGNSlGVML4aWsMD65vKnrjAIrM2sr3gPBkvlmB.jpg', 1, 0, '2026-01-13 06:19:11'),
+(33, 17, 24, 'products/uaeyw0FvYaCzCQdvXZNjBjn8J9EuaxI4PR2Opa1L.jpg', 0, 0, '2026-01-13 06:19:11'),
+(34, 17, NULL, 'products/SHaXEms3CJPNDgcces4jSO8udmp2YV1lk8VykKwP.jpg', 1, 0, '2026-01-13 06:19:11');
 
 -- --------------------------------------------------------
 
@@ -110,7 +124,14 @@ INSERT INTO `bien_the` (`id`, `sanpham_id`, `sku`, `gia`, `gia_von`, `so_luong_t
 (14, 10, '12', 35000000, 30000000, 32, NULL, '2026-01-12 05:16:36', '2026-01-12 05:16:36'),
 (15, 10, '1234', 30000000, 29000000, 23, NULL, '2026-01-12 05:16:36', '2026-01-12 05:16:36'),
 (16, 11, '123-IXVK', 8000000, 7000000, 12, NULL, '2026-01-12 05:30:30', '2026-01-12 05:30:30'),
-(17, 11, '1234-EZA2', 9000000, 8000000, 33, NULL, '2026-01-12 05:30:30', '2026-01-12 05:30:30');
+(17, 11, '1234-EZA2', 9000000, 8000000, 33, NULL, '2026-01-12 05:30:30', '2026-01-12 05:30:30'),
+(18, 12, '1-VZIQ', 1200000, 1000000, 23, NULL, '2026-01-13 06:01:11', '2026-01-13 06:01:11'),
+(19, 13, '1-HEQW', 55000000, 50000000, 12, NULL, '2026-01-13 06:05:04', '2026-01-13 06:05:04'),
+(20, 14, '1-WOGQ', 7000000, 6000000, 23, NULL, '2026-01-13 06:07:16', '2026-01-13 06:07:16'),
+(21, 15, '1-G6NH', 5000000, 4000000, 12, NULL, '2026-01-13 06:13:29', '2026-01-13 06:13:29'),
+(22, 16, '1-VZNM', 200000, 150000, 10, NULL, '2026-01-13 06:16:04', '2026-01-13 06:16:04'),
+(23, 17, '1-62YE', 25000000, 24000000, 12, NULL, '2026-01-13 06:19:11', '2026-01-13 06:19:11'),
+(24, 17, '2-VOOP', 25000000, 21000000, 10, NULL, '2026-01-13 06:19:11', '2026-01-13 06:19:11');
 
 -- --------------------------------------------------------
 
@@ -163,7 +184,21 @@ INSERT INTO `bien_the_giatri` (`bien_the_id`, `giatri_thuoctinh_id`) VALUES
 (17, 2),
 (17, 5),
 (17, 11),
-(17, 15);
+(17, 15),
+(18, 2),
+(19, 2),
+(19, 8),
+(19, 11),
+(19, 16),
+(20, 4),
+(21, 2),
+(22, 3),
+(23, 3),
+(23, 5),
+(23, 9),
+(24, 2),
+(24, 5),
+(24, 11);
 
 -- --------------------------------------------------------
 
@@ -376,8 +411,8 @@ CREATE TABLE `donhang` (
 INSERT INTO `donhang` (`id`, `ma_don_hang`, `nguoi_dung_id`, `ten_khach`, `sdt_khach`, `email_khach`, `dia_chi_khach`, `phuong_thuc_thanh_toan`, `ma_giam_gia_id`, `giam_gia`, `tong_tien`, `thanh_tien`, `trang_thai`, `ghi_chu`, `created_at`, `updated_at`) VALUES
 (1, 'DH202601128325', NULL, 'Admin', '09710102891', 'admin@gmail.com', 'ádasd', 'cod', NULL, 0, 5000000, 5000000, 'da_huy', 'áda', '2026-01-12 04:11:01', '2026-01-12 04:43:26'),
 (2, 'DH202601126101', NULL, 'Nhật Minh', '09710102891', 'minh@gmail.com', '123 Test', 'cod', NULL, 0, 5000000, 5000000, 'da_xac_nhan', 'Đóng gói cẩn thận cho tôi nhé', '2026-01-12 04:42:31', '2026-01-12 04:42:57'),
-(3, 'DH202601125867', 4, 'Văn A', '09710102891', 'a@gmail.com', '123 Test', 'cod', NULL, 0, 5000000, 5000000, 'cho_xac_nhan', 'Đóng gói cẩn thận nha shop', '2026-01-12 04:51:09', '2026-01-12 04:51:09'),
-(4, 'DH202601122546', 4, 'Văn A', '09710102891', 'a@gmail.com', 'sadasd 234', 'cod', NULL, 0, 5000000, 5000000, 'dang_giao', 'tests 1', '2026-01-12 04:51:34', '2026-01-12 04:53:03');
+(3, 'DH202601125867', NULL, 'Văn A', '09710102891', 'a@gmail.com', '123 Test', 'cod', NULL, 0, 5000000, 5000000, 'cho_xac_nhan', 'Đóng gói cẩn thận nha shop', '2026-01-12 04:51:09', '2026-01-12 04:51:09'),
+(4, 'DH202601122546', NULL, 'Văn A', '09710102891', 'a@gmail.com', 'sadasd 234', 'cod', NULL, 0, 5000000, 5000000, 'dang_giao', 'tests 1', '2026-01-12 04:51:34', '2026-01-12 04:53:03');
 
 -- --------------------------------------------------------
 
@@ -497,10 +532,7 @@ CREATE TABLE `nguoi_dung` (
 --
 
 INSERT INTO `nguoi_dung` (`id`, `ten`, `email`, `email_da_xac_thuc_at`, `mat_khau`, `sdt`, `vai_tro`, `trang_thai`, `token_ghi_nho`, `created_at`, `updated_at`) VALUES
-(1, 'Admin', 'admin@gmail.com', NULL, '$2y$10$GiOzk6TUzs7qvqMn.0DKb.WeA2KDuCpXC0YP5nFBqenWAs7kGWfPK', NULL, 'admin', 'active', NULL, '2025-12-19 08:55:12', '2026-01-12 09:05:14'),
-(2, 'Nguyễn Văn A', 'customer@gmail.com', NULL, '$2y$10$WBfE/VgqGwft5KhGbqzkr.LVDTyl/PcXyF0kC4K2tn4X2BYJFmaHy', '0909123456', 'customer', 'active', NULL, '2025-12-19 08:55:12', '2025-12-19 09:02:35'),
-(3, 'Nhật Minh', 'minh@gmail.com', NULL, '$2y$12$2sf5C72QzlMmAoTJ7YhxDepCLzqxLuSIzKC1QT5VrvZh.VWF.uoRC', NULL, 'customer', 'active', NULL, '2026-01-12 04:33:19', '2026-01-12 04:33:19'),
-(4, 'Văn A', 'a@gmail.com', NULL, '$2y$12$qGWsXLuwi7LutXZStFgpteQeW2vCrQb2pxQ3srzslLiJWd6/ewzLm', '09710102891', 'customer', 'active', NULL, '2026-01-12 04:47:15', '2026-01-12 04:51:09');
+(1, 'Admin', 'admin@gmail.com', NULL, '$2y$10$GiOzk6TUzs7qvqMn.0DKb.WeA2KDuCpXC0YP5nFBqenWAs7kGWfPK', NULL, 'admin', 'active', NULL, '2025-12-19 08:55:12', '2026-01-12 09:05:14');
 
 -- --------------------------------------------------------
 
@@ -607,7 +639,13 @@ INSERT INTO `sanpham` (`id`, `ten`, `slug`, `danhmuc_id`, `thuong_hieu_id`, `mo_
 (5, 'OPPO Reno15 Pro', 'oppo-reno15-pro', 1, NULL, NULL, 'OPPO Reno 15F là smartphone dành cho người trẻ năng động, yêu công nghệ. Máy nổi bật với thiết kế bền bỉ chuẩn IP69, màn hình AMOLED 120 Hz sắc nét và camera AI linh hoạt, cho ảnh chân dung ấn tượng. Pin 7000 mAh kèm sạc nhanh 80W giúp dùng cả ngày không gián đoạn. Reno 15F mang đến trải nghiệm giải trí, làm việc và kết nối thuận tiện, hiện đại.', 'draft', 0, 0, '2026-01-12 05:06:35', '2026-01-12 05:06:35'),
 (9, 'Xiaomi Redmi Note 15 Pro+', 'xiaomi-redmi-note-15-pro', 1, NULL, NULL, 'Giải mã Xiaomi Redmi Note 15 Series: 5 phiên bản đâu là chọn lựa tối ưu nhất?\r\nVới sự ra mắt của 5 phiên bản Xiaomi Redmi Note 15 series', 'draft', 0, 0, '2026-01-12 05:12:28', '2026-01-12 05:12:28'),
 (10, 'Điện thoại iPhone 17 Pro', 'dien-thoai-iphone-17-pro', 1, NULL, NULL, 'Khẳng định đẳng cấp với khung nhôm nguyên khối chắc chắn và diện mạo mới.\r\nHình ảnh hiển thị hoàn hảo, siêu mượt trên màn hình ProMotion viền mỏng hơn.\r\nNhiếp ảnh chuyên nghiệp với bộ ba camera 48 MP và khả năng zoom quang học 8x.\r\nChinh phục mọi giới hạn với chip A19 Pro được tối ưu bởi tản nhiệt buồng hơi.\r\nDuy trì hiệu suất đỉnh cao nhờ viên pin lớn, xem video đến 31 giờ.', 'draft', 0, 0, '2026-01-12 05:16:36', '2026-01-12 05:16:36'),
-(11, 'vivo Y31d', 'vivo-y31d', 1, NULL, NULL, 'vivo Y31d là mẫu smartphone mới, tập trung vào độ bền và thời lượng pin dài. Thiết bị đạt chuẩn kháng nước, bụi IP68/69/69+, đồng thời sở hữu pin BlueVolt 7200 mAh phục vụ nhu cầu sử dụng liên tục. Bên cạnh đó, màn hình 6.75 inch 120 Hz cùng Snapdragon 6s Gen 2 4G đáp ứng tốt các tác vụ hằng ngày.', 'draft', 0, 0, '2026-01-12 05:30:30', '2026-01-12 05:30:30');
+(11, 'vivo Y31d', 'vivo-y31d', 1, NULL, NULL, 'vivo Y31d là mẫu smartphone mới, tập trung vào độ bền và thời lượng pin dài. Thiết bị đạt chuẩn kháng nước, bụi IP68/69/69+, đồng thời sở hữu pin BlueVolt 7200 mAh phục vụ nhu cầu sử dụng liên tục. Bên cạnh đó, màn hình 6.75 inch 120 Hz cùng Snapdragon 6s Gen 2 4G đáp ứng tốt các tác vụ hằng ngày.', 'draft', 0, 0, '2026-01-12 05:30:30', '2026-01-12 05:30:30'),
+(12, 'Ốp lưng MagSafe iPhone 17 Pro Max', 'op-lung-magsafe-iphone-17-pro-max', 4, NULL, NULL, 'Sản phẩm mới (Cần thanh toán trước khi mở hộp).\r\nSản phẩm mới, chính hãng (Không bảo hành, đổi trả).', 'draft', 0, 0, '2026-01-13 06:01:11', '2026-01-13 06:01:11'),
+(13, 'Laptop MacBook Pro 14 inch M5', 'laptop-macbook-pro-14-inch-m5', 2, NULL, NULL, 'Apple M5\r\nSố nhân: 10\r\nSố luồng: Hãng không công bố\r\nTốc độ CPU: 153 GB/s memory bandwidth', 'draft', 0, 0, '2026-01-13 06:05:04', '2026-01-13 06:05:04'),
+(14, 'Đồng hồ Orient Vietnam Special Edition', 'dong-ho-orient-vietnam-special-edition', 4, NULL, NULL, 'Đối tượng sử dụng: Nam\r\nĐường kính mặt: 41.5 mm\r\nDây đeo: Da tổng hợp', 'draft', 0, 0, '2026-01-13 06:07:16', '2026-01-13 06:07:16'),
+(15, 'Bộ Adapter chuyển đổi Type C', 'bo-adapter-chuyen-doi-type-c', 4, NULL, NULL, 'Bảo hành có cam kết 12 tháng tại 2953 siêu thị toàn quốc\r\nchính sách bảo hành: Bảo hành có cam kết 12 tháng tại 2953 siêu thị toàn quốc Xem chi tiết\r\nThông số kỹ thuật\r\nChức năng: Xuất hình ảnh\r\nChuyển đổi cổng kết nối: Sạc', 'draft', 0, 0, '2026-01-13 06:13:29', '2026-01-13 06:13:29'),
+(16, 'Cáp sạc nhanh và truyền dữ liệu Type-C', 'cap-sac-nhanh-va-truyen-du-lieu-type-c', 4, NULL, NULL, 'Chức năng: Sạc và Truyền dữ liệu\r\nĐầu vào: USB Type-C\r\nĐầu ra: Lightning: 30W (Max)', 'draft', 0, 0, '2026-01-13 06:16:04', '2026-01-13 06:16:04'),
+(17, 'Điện thoại iPhone Air', 'dien-thoai-iphone-air', 1, NULL, NULL, 'Thiết kế: Nguyên khối\r\nChất liệu: Khung Titan & Mặt lưng kính cường lực\r\nKích thước, khối lượng: Dài 156.2 mm - Ngang 74.7 mm - Dày 5.64 mm - Nặng 165 g\r\nThời điểm ra mắt: 09/2025\r\nHãng: iPhone (Apple). Xem thông tin hãng', 'draft', 0, 0, '2026-01-13 06:19:11', '2026-01-13 06:19:11');
 
 -- --------------------------------------------------------
 
@@ -644,7 +682,18 @@ INSERT INTO `sanpham_thuoctinh` (`sanpham_id`, `thuoctinh_id`) VALUES
 (11, 1),
 (11, 2),
 (11, 3),
-(11, 4);
+(11, 4),
+(12, 1),
+(13, 1),
+(13, 2),
+(13, 3),
+(13, 4),
+(14, 1),
+(15, 1),
+(16, 1),
+(17, 1),
+(17, 2),
+(17, 3);
 
 -- --------------------------------------------------------
 
@@ -1061,13 +1110,13 @@ ALTER TABLE `anh_danh_gia`
 -- AUTO_INCREMENT for table `anh_sanpham`
 --
 ALTER TABLE `anh_sanpham`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `bien_the`
 --
 ALTER TABLE `bien_the`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `binh_luan`
@@ -1175,7 +1224,7 @@ ALTER TABLE `phieu_nhap`
 -- AUTO_INCREMENT for table `sanpham`
 --
 ALTER TABLE `sanpham`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `so_sanh_sanpham`
