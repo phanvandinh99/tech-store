@@ -10,9 +10,16 @@
     .zoomWrapper {
         margin-bottom: 1rem;
     }
+    .zoomWrapper {
+        max-width: 100%;
+        margin: 0 auto;
+    }
     .zoomWrapper img {
         width: 100%;
+        max-width: 400px;
         height: auto;
+        margin: 0 auto;
+        display: block;
     }
     .single-zoom-thumb ul {
         display: flex;
@@ -229,7 +236,7 @@
             <!--product details start-->
             <div class="product_details">
                 <div class="row">
-                    <div class="col-lg-5 col-md-6">
+                    <div class="col-lg-4 col-md-6">
                         <div class="product-details-tab">
                             @php
                                 $images = $product->anhSanPhams;
@@ -258,7 +265,7 @@
                             @endif
                         </div>
                     </div>
-                    <div class="col-lg-7 col-md-6">
+                    <div class="col-lg-8 col-md-6">
                         <div class="product_d_right">
                             <form id="addToCartForm" action="{{ route('cart.add') }}" method="POST">
                                 @csrf
@@ -297,9 +304,9 @@
                                     @endif
                                 </div>
 
-                                @if($product->mota)
+                                @if($product->mo_ta_ngan)
                                 <div class="product_desc">
-                                    <p>{{ $product->mota }}</p>
+                                    <p>{{ $product->mo_ta_ngan }}</p>
                                 </div>
                                 @endif
 
@@ -396,8 +403,10 @@
                             <div class="tab-content">
                                 <div class="tab-pane fade show active" id="info" role="tabpanel">
                                     <div class="product_info_content">
-                                        @if($product->mota)
-                                            <p>{{ $product->mota }}</p>
+                                        @if($product->mo_ta_chi_tiet)
+                                            <div style="white-space: pre-wrap; line-height: 1.8;">{{ $product->mo_ta_chi_tiet }}</div>
+                                        @elseif($product->mo_ta_ngan)
+                                            <p>{{ $product->mo_ta_ngan }}</p>
                                         @else
                                             <p>Không có mô tả cho sản phẩm này.</p>
                                         @endif
