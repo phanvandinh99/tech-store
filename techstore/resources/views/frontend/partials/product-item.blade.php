@@ -42,7 +42,7 @@
                            data-tippy-arrow="true" 
                            data-tippy-inertia="true" 
                            data-tippy="Thêm vào yêu thích">
-                            <i class="ion-android-favorite-outline"></i>
+                            <i class="fa fa-heart-o"></i>
                         </a>
                     </li>
                     <li class="compare">
@@ -53,7 +53,7 @@
                            data-tippy-arrow="true" 
                            data-tippy-inertia="true" 
                            data-tippy="So sánh">
-                            <i class="ion-ios-settings-strong"></i>
+                            <i class="fa fa-exchange"></i>
                         </a>
                     </li>
                     <li class="quick_button">
@@ -62,7 +62,7 @@
                            data-tippy-arrow="true" 
                            data-tippy-inertia="true" 
                            data-tippy="Xem nhanh">
-                            <i class="ion-ios-search-strong"></i>
+                            <i class="fa fa-eye"></i>
                         </a>
                     </li>
                 </ul>

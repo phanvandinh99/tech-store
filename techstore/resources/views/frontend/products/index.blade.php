@@ -127,9 +127,9 @@
                             @endif
                             <div class="action_links">
                                 <ul>
-                                    <li class="wishlist"><a href="#" data-tippy-placement="top" data-tippy-arrow="true" data-tippy-inertia="true" data-tippy="Thêm vào yêu thích"><i class="ion-android-favorite-outline"></i></a></li>
-                                    <li class="compare"><a href="#" data-tippy-placement="top" data-tippy-arrow="true" data-tippy-inertia="true" data-tippy="So sánh"><i class="ion-ios-settings-strong"></i></a></li>
-                                    <li class="quick_button"><a href="{{ route('products.show', $product->id) }}" data-tippy-placement="top" data-tippy-arrow="true" data-tippy-inertia="true" data-tippy="Xem nhanh"><i class="ion-ios-search-strong"></i></a></li>
+                                    <li class="wishlist"><a href="#" data-tippy-placement="top" data-tippy-arrow="true" data-tippy-inertia="true" data-tippy="Thêm vào yêu thích"><i class="fa fa-heart-o"></i></a></li>
+                                    <li class="compare"><a href="#" data-tippy-placement="top" data-tippy-arrow="true" data-tippy-inertia="true" data-tippy="So sánh"><i class="fa fa-exchange"></i></a></li>
+                                    <li class="quick_button"><a href="{{ route('products.show', $product->id) }}" data-tippy-placement="top" data-tippy-arrow="true" data-tippy-inertia="true" data-tippy="Xem nhanh"><i class="fa fa-eye"></i></a></li>
                                 </ul>
                             </div>
                         </div>
