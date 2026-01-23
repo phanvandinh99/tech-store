@@ -165,6 +165,14 @@
 @endpush
 
 @section('content')
+<!-- Header with Statistics Link -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Dashboard</h2>
+    <a href="{{ route('admin.thongke.index') }}" class="btn btn-primary">
+        <i class="bi bi-graph-up"></i> Xem thống kê chi tiết
+    </a>
+</div>
+
 <!-- Stats Cards -->
 <div class="row g-3 mb-4">
     <div class="col-6 col-lg-3">

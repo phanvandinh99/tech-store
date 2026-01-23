@@ -180,5 +180,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Nhật ký hoạt động
         Route::get('nhatky', [NhatKyController::class, 'index'])->name('nhatky.index');
         Route::get('nhatky/{id}', [NhatKyController::class, 'show'])->name('nhatky.show');
+
+        // Thống kê
+        Route::get('thongke', [App\Http\Controllers\Admin\ThongKeController::class, 'index'])->name('thongke.index');
+        Route::get('thongke/chart-data', [App\Http\Controllers\Admin\ThongKeController::class, 'getChartDataAjax'])->name('thongke.chartData');
     });
 });

@@ -532,6 +532,10 @@
                 <i class="bi bi-clock-history"></i>
                 <span>Nhật ký</span>
             </a>
+            <a class="nav-link {{ request()->routeIs('admin.thongke.*') ? 'active' : '' }}" href="{{ route('admin.thongke.index') }}">
+                <i class="bi bi-graph-up"></i>
+                <span>Thống kê</span>
+            </a>
         </nav>
     </div>
 
