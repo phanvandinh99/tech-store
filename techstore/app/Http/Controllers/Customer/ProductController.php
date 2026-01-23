@@ -11,7 +11,14 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = SanPham::with(['danhMuc', 'bienThes', 'anhSanPhams']);
+        $query = SanPham::with(['danhMuc', 'bienThes', 'anhSanPhams', 'danhGias']);
+
+        // Mặc định chỉ hiển thị sản phẩm còn hàng (trừ khi có tham số show_all)
+        if (!$request->has('show_all')) {
+            $query->whereHas('bienThes', function($q) {
+                $q->where('so_luong_ton', '>', 0);
+            });
+        }
 
         // Filter by category
         if ($request->has('category') && $request->category) {
@@ -23,29 +30,50 @@ class ProductController extends Controller
             $query->where('ten', 'like', '%' . $request->search . '%');
         }
 
+        // Price range filter
+        if ($request->has('min_price') && $request->min_price) {
+            $query->whereHas('bienThes', function($q) use ($request) {
+                $q->where('gia', '>=', $request->min_price);
+            });
+        }
+
+        if ($request->has('max_price') && $request->max_price) {
+            $query->whereHas('bienThes', function($q) use ($request) {
+                $q->where('gia', '<=', $request->max_price);
+            });
+        }
+
         // Sort
         $sortBy = $request->get('sort', 'newest');
         switch ($sortBy) {
             case 'price_low':
-                $query->join('bien_the', 'sanpham.id', '=', 'bien_the.sanpham_id')
+                $query->leftJoin('bien_the', 'sanpham.id', '=', 'bien_the.sanpham_id')
                       ->orderBy('bien_the.gia', 'asc')
                       ->select('sanpham.*')
                       ->distinct();
                 break;
             case 'price_high':
-                $query->join('bien_the', 'sanpham.id', '=', 'bien_the.sanpham_id')
+                $query->leftJoin('bien_the', 'sanpham.id', '=', 'bien_the.sanpham_id')
                       ->orderBy('bien_the.gia', 'desc')
                       ->select('sanpham.*')
                       ->distinct();
                 break;
-            case 'name':
+            case 'name_asc':
                 $query->orderBy('ten', 'asc');
                 break;
-            default:
+            case 'popular':
+                $query->orderBy('luot_xem', 'desc');
+                break;
+            default: // newest
                 $query->orderBy('created_at', 'desc');
         }
 
-        $products = $query->paginate(12);
+        $perPage = $request->get('per_page', 12);
+        if (!in_array($perPage, [12, 24, 36])) {
+            $perPage = 12;
+        }
+
+        $products = $query->paginate($perPage)->appends($request->all());
         $categories = DanhMuc::all();
 
         return view('frontend.products.index', compact('products', 'categories'));
