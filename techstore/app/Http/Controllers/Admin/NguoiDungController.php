@@ -21,6 +21,16 @@ class NguoiDungController extends Controller
             });
         }
 
+        // Filter by role
+        if ($request->has('vai_tro') && $request->vai_tro) {
+            $query->where('vai_tro', $request->vai_tro);
+        }
+
+        // Filter by status
+        if ($request->has('trang_thai') && $request->trang_thai) {
+            $query->where('trang_thai', $request->trang_thai);
+        }
+
         // Sort
         $sortBy = $request->get('sort_by', 'created_at');
         $sortOrder = $request->get('sort_order', 'desc');
@@ -32,30 +42,39 @@ class NguoiDungController extends Controller
         }
 
         // Pagination - 8 items per page
-        $users = $query->paginate(8)->withQueryString();
+        $nguoiDungs = $query->paginate(8)->withQueryString();
 
         // If AJAX request, return JSON
         if ($request->ajax()) {
             return response()->json([
-                'html' => view('admin.nguoidung.table', compact('users'))->render(),
-                'pagination' => view('admin.nguoidung.pagination', compact('users'))->render(),
+                'html' => view('admin.nguoidung.table', compact('nguoiDungs'))->render(),
+                'pagination' => view('admin.nguoidung.pagination', compact('nguoiDungs'))->render(),
             ]);
         }
         
-        return view('admin.nguoidung.index', compact('users'));
+        return view('admin.nguoidung.index', compact('nguoiDungs'));
     }
 
     public function show(NguoiDung $nguoidung)
     {
         $nguoidung->load('donHangs');
-        return view('admin.nguoidung.show', ['user' => $nguoidung]);
+        return view('admin.nguoidung.show', compact('nguoidung'));
     }
 
     public function toggleStatus(NguoiDung $nguoidung)
     {
-        // Có thể thêm cột 'is_active' vào bảng nguoidung nếu cần
-        // Hiện tại chỉ xem thông tin
-        return redirect()->back();
+        // Không cho phép khóa chính mình
+        if ($nguoidung->id == auth()->id()) {
+            return redirect()->back()->with('error', 'Không thể thay đổi trạng thái tài khoản của chính mình.');
+        }
+
+        // Chuyển đổi trạng thái
+        $newStatus = $nguoidung->trang_thai == 'active' ? 'inactive' : 'active';
+        $nguoidung->update(['trang_thai' => $newStatus]);
+
+        $message = $newStatus == 'active' ? 'Đã kích hoạt tài khoản.' : 'Đã khóa tài khoản.';
+        
+        return redirect()->back()->with('success', $message);
     }
 }
 
