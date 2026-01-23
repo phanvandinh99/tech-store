@@ -51,4 +51,9 @@ class NguoiDung extends Authenticatable
     {
         return $this->hasMany(DonHang::class, 'nguoi_dung_id');
     }
+
+    public function danhSachYeuThichs(): HasMany
+    {
+        return $this->hasMany(DanhSachYeuThich::class, 'nguoi_dung_id');
+    }
 }

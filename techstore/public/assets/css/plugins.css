@@ -7587,6 +7587,7 @@ fieldset:disabled .btn {
 }
 
 .justify-content-center {
+  padding: 60px 0 110px;
   justify-content: center !important
 }
 

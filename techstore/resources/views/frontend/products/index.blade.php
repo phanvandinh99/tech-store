@@ -185,5 +185,157 @@
     </div>
 </div>
 <!--product area end-->
+
+@push('scripts')
+<script>
+// Wishlist functionality for product listing
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle wishlist button clicks
+    document.querySelectorAll('.add-to-wishlist').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const productId = this.getAttribute('data-product-id');
+            toggleWishlistFromListing(productId, this);
+        });
+    });
+
+    // Check wishlist status for all products
+    @auth('customer')
+    checkWishlistStatus();
+    @endauth
+});
+
+function toggleWishlistFromListing(productId, button) {
+    @guest('customer')
+        alert('Vui lòng đăng nhập để sử dụng tính năng yêu thích');
+        window.location.href = '{{ route("login") }}';
+        return;
+    @endguest
+
+    const icon = button.querySelector('i');
+    const originalClass = icon.className;
+
+    fetch('{{ route("wishlist.toggle") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+            product_id: productId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (data.action === 'added') {
+                icon.className = 'fa fa-heart';
+                icon.style.color = '#e74c3c';
+                button.setAttribute('data-tippy', 'Xóa khỏi yêu thích');
+            } else {
+                icon.className = 'fa fa-heart-o';
+                icon.style.color = '';
+                button.setAttribute('data-tippy', 'Thêm vào yêu thích');
+            }
+            showNotification(data.message, 'success');
+        } else {
+            showNotification(data.message || 'Có lỗi xảy ra', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Có lỗi xảy ra khi thực hiện thao tác', 'error');
+    });
+}
+
+@auth('customer')
+function checkWishlistStatus() {
+    const productIds = Array.from(document.querySelectorAll('.add-to-wishlist')).map(btn => 
+        btn.getAttribute('data-product-id')
+    );
+
+    if (productIds.length === 0) return;
+
+    // Check each product individually
+    productIds.forEach(productId => {
+        fetch('{{ route("wishlist.check") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                product_id: productId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.inWishlist) {
+                const button = document.querySelector(`[data-product-id="${productId}"]`);
+                if (button) {
+                    const icon = button.querySelector('i');
+                    icon.className = 'fa fa-heart';
+                    icon.style.color = '#e74c3c';
+                    button.setAttribute('data-tippy', 'Xóa khỏi yêu thích');
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error checking wishlist status:', error);
+        });
+    });
+}
+@endauth
+
+// Simple notification function
+function showNotification(message, type) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} notification-popup`;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 300px;
+        padding: 15px;
+        border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        animation: slideInRight 0.3s ease-out;
+    `;
+    notification.textContent = message;
+    
+    // Add animation styles if not already added
+    if (!document.querySelector('#notification-styles')) {
+        const style = document.createElement('style');
+        style.id = 'notification-styles';
+        style.textContent = `
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideOutRight 0.3s ease-out';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
+}
+</script>
+@endpush
 @endsection
 

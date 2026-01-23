@@ -8940,6 +8940,7 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
 /* 17. login page css here */
 .login_page_bg {
     background: #F5F5F9;
+    padding: 60px 0 110px;
     /*padding: 60px 0 133px;*/
 }
 

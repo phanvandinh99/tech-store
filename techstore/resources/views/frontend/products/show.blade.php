@@ -41,7 +41,7 @@
     }
     .single-zoom-thumb img:hover,
     .single-zoom-thumb .active img {
-        border-color: #007bff;
+        border-color: #c40316;
     }
     .product_d_right h3 {
         font-size: 1.5rem;
@@ -108,7 +108,7 @@
     }
     .product_variant.color ul li:hover,
     .product_variant.color ul li.active {
-        border-color: #007bff;
+        border-color: #c40316;
         transform: scale(1.1);
     }
     .product_variant.quantity {
@@ -123,8 +123,7 @@
         border-radius: 0.25rem;
     }
     .product_variant.quantity .button {
-        padding: 0.75rem 2rem;
-        background: #007bff;
+        background: #c40316;
         color: white;
         border: none;
         border-radius: 0.25rem;
@@ -133,7 +132,7 @@
         text-transform: uppercase;
     }
     .product_variant.quantity .button:hover {
-        background: #0056b3;
+        background: #7c000cff;
     }
     .product_variant.quantity .button:disabled {
         background: #ccc;
@@ -151,7 +150,7 @@
         text-decoration: none;
     }
     .product_d_action a:hover {
-        color: #007bff;
+        color: #c40316;
     }
     .product_meta {
         margin: 1rem 0;
@@ -180,7 +179,7 @@
     .priduct_social .twitter { background: #1da1f2; }
     .priduct_social .pinterest { background: #bd081c; }
     .priduct_social .google-plus { background: #dd4b39; }
-    .priduct_social .linkedin { background: #0077b5; }
+    .priduct_social .linkedin { background: #c40316; }
     .variant-option {
         display: inline-block;
         margin: 0.25rem;
@@ -191,12 +190,12 @@
         transition: all 0.3s;
     }
     .variant-option:hover {
-        border-color: #007bff;
+        border-color: #c40316;
     }
     .variant-option.selected {
-        background-color: #007bff;
+        background-color: #c40316;
         color: white;
-        border-color: #007bff;
+        border-color: #c40316;
     }
     .variant-option.disabled {
         opacity: 0.5;
@@ -288,7 +287,7 @@
     }
     .review_image:hover {
         transform: scale(1.05);
-        border-color: #007bff;
+        border-color: #c40316;
     }
     .more_images {
         width: 80px;
@@ -477,7 +476,15 @@
 
                                 <div class="product_d_action">
                                     <ul>
-                                        <li><a href="#" title="Thêm vào yêu thích">+ Thêm vào Yêu thích</a></li>
+                                        <li>
+                                            <a href="javascript:void(0)" 
+                                               id="wishlistBtn" 
+                                               onclick="toggleWishlist({{ $product->id }})" 
+                                               title="Thêm vào yêu thích">
+                                                <i class="fa fa-heart-o" id="wishlistIcon"></i> 
+                                                <span id="wishlistText">Thêm vào Yêu thích</span>
+                                            </a>
+                                        </li>
                                         <li><a href="#" title="So sánh">+ So sánh</a></li>
                                     </ul>
                                 </div>
@@ -489,11 +496,11 @@
 
                             <div class="priduct_social">
                                 <ul>
-                                    <li><a class="facebook" href="#" title="facebook"><i class="fa fa-facebook"></i> Like</a></li>
-                                    <li><a class="twitter" href="#" title="twitter"><i class="fa fa-twitter"></i> tweet</a></li>
-                                    <li><a class="pinterest" href="#" title="pinterest"><i class="fa fa-pinterest"></i> save</a></li>
-                                    <li><a class="google-plus" href="#" title="google +"><i class="fa fa-google-plus"></i> share</a></li>
-                                    <li><a class="linkedin" href="#" title="linkedin"><i class="fa fa-linkedin"></i> linked</a></li>
+                                    <li><a class="facebook" href="#" title="facebook"><i class="fa fa-facebook"></i></a></li>
+                                    <li><a class="twitter" href="#" title="twitter"><i class="fa fa-twitter"></i></a></li>
+                                    <li><a class="pinterest" href="#" title="pinterest"><i class="fa fa-pinterest"></i></a></li>
+                                    <li><a class="google-plus" href="#" title="google +"><i class="fa fa-google-plus"></i></a></li>
+                                    <li><a class="linkedin" href="#" title="linkedin"><i class="fa fa-linkedin"></i></a></li>
                                 </ul>
                             </div>
                         </div>
@@ -872,6 +879,127 @@ function showReviewImage(imageSrc) {
 function loadMoreReviews() {
     // This would typically load more reviews via AJAX
     alert('Tính năng tải thêm đánh giá sẽ được phát triển trong tương lai');
+}
+
+// Wishlist functionality
+function toggleWishlist(productId) {
+    @guest('customer')
+        alert('Vui lòng đăng nhập để sử dụng tính năng yêu thích');
+        window.location.href = '{{ route("login") }}';
+        return;
+    @endguest
+
+    fetch('{{ route("wishlist.toggle") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+            product_id: productId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const icon = document.getElementById('wishlistIcon');
+            const text = document.getElementById('wishlistText');
+            
+            if (data.action === 'added') {
+                icon.className = 'fa fa-heart';
+                icon.style.color = '#e74c3c';
+                text.textContent = 'Đã yêu thích';
+            } else {
+                icon.className = 'fa fa-heart-o';
+                icon.style.color = '';
+                text.textContent = 'Thêm vào Yêu thích';
+            }
+            
+            // Show success message
+            showNotification(data.message, 'success');
+        } else {
+            showNotification(data.message || 'Có lỗi xảy ra', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Có lỗi xảy ra khi thực hiện thao tác', 'error');
+    });
+}
+
+// Check if product is in wishlist on page load
+@auth('customer')
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('{{ route("wishlist.check") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+            product_id: {{ $product->id }}
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.inWishlist) {
+            const icon = document.getElementById('wishlistIcon');
+            const text = document.getElementById('wishlistText');
+            icon.className = 'fa fa-heart';
+            icon.style.color = '#e74c3c';
+            text.textContent = 'Đã yêu thích';
+        }
+    })
+    .catch(error => {
+        console.error('Error checking wishlist status:', error);
+    });
+});
+@endauth
+
+// Simple notification function
+function showNotification(message, type) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} notification-popup`;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 300px;
+        padding: 15px;
+        border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        animation: slideInRight 0.3s ease-out;
+    `;
+    notification.textContent = message;
+    
+    // Add animation styles
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideOutRight 0.3s ease-out';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
 }
 </script>
 @endpush

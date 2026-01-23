@@ -70,6 +70,15 @@ Route::middleware('auth:customer')->group(function () {
         Route::put('/{id}', [App\Http\Controllers\Customer\ReviewController::class, 'update'])->name('update');
         Route::delete('/images/{id}', [App\Http\Controllers\Customer\ReviewController::class, 'deleteImage'])->name('deleteImage');
     });
+
+    // Wishlist Routes
+    Route::prefix('wishlist')->name('wishlist.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Customer\WishlistController::class, 'index'])->name('index');
+        Route::post('/add', [App\Http\Controllers\Customer\WishlistController::class, 'add'])->name('add');
+        Route::post('/remove', [App\Http\Controllers\Customer\WishlistController::class, 'remove'])->name('remove');
+        Route::post('/toggle', [App\Http\Controllers\Customer\WishlistController::class, 'toggle'])->name('toggle');
+        Route::post('/check', [App\Http\Controllers\Customer\WishlistController::class, 'check'])->name('check');
+    });
 });
 
 // Customer Auth Routes

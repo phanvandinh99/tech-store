@@ -42,5 +42,20 @@ class SanPham extends Model
     {
         return $this->hasMany(DanhGia::class, 'sanpham_id');
     }
+
+    public function danhSachYeuThichs(): HasMany
+    {
+        return $this->hasMany(DanhSachYeuThich::class, 'sanpham_id');
+    }
+
+    // Helper method to check if product is in user's wishlist
+    public function isInWishlist($userId = null): bool
+    {
+        if (!$userId) {
+            return false;
+        }
+        
+        return $this->danhSachYeuThichs()->where('nguoi_dung_id', $userId)->exists();
+    }
 }
 

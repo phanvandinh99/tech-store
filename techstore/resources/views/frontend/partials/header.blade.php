@@ -97,6 +97,12 @@
             $cartTotal += $item['price'] * $item['quantity'];
         }
     }
+    
+    // Get wishlist count for authenticated customer
+    $wishlistCount = 0;
+    if (Auth::guard('customer')->check()) {
+        $wishlistCount = \App\Models\DanhSachYeuThich::where('nguoi_dung_id', Auth::guard('customer')->id())->count();
+    }
 @endphp
 
 <header>
@@ -194,8 +200,12 @@
                                             <i class="fa fa-star"></i>Đánh giá của tôi</a></li>
                                         <li><a href="{{ route('warranty.index') }}">
                                             <i class="fa fa-wrench"></i>Yêu cầu bảo hành</a></li>
-                                        <li><a href="#">
-                                            <i class="fa fa-heart"></i>Sản phẩm yêu thích</a></li>
+                                        <li><a href="{{ route('wishlist.index') }}">
+                                            <i class="fa fa-heart"></i>Sản phẩm yêu thích
+                                            @if($wishlistCount > 0)
+                                                <span class="badge badge-primary" style="background-color: #e74c3c; color: white; border-radius: 10px; padding: 2px 6px; font-size: 11px; margin-left: 5px;">{{ $wishlistCount }}</span>
+                                            @endif
+                                        </a></li>
                                         <li><a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="logout-link">
                                             <i class="fa fa-sign-out"></i>Đăng xuất</a></li>
                                     </ul>
@@ -282,7 +292,7 @@
                             <div class="categories_title">
                                 <h2 class="categori_toggle" onclick="toggleCategoriesMenu()" style="cursor: pointer; position: relative;">
                                     TẤT CẢ DANH MỤC
-                                    <i class="fa fa-angle-down" id="categoriesToggleIcon" style="float: right; margin-top: 5px; transition: transform 0.3s;"></i>
+                                    <i class="" id="categoriesToggleIcon" style="float: right; margin-top: 5px; transition: transform 0.3s;"></i>
                                 </h2>
                             </div>
                             <div class="categories_menu_toggle" id="categoriesMenuToggle" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-top: 2px solid #e74c3c; z-index: 999; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
