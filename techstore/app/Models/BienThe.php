@@ -42,5 +42,11 @@ class BienThe extends Model
     {
         return $this->hasMany(ChiTietPhieuNhap::class, 'bien_the_id');
     }
+
+    // Accessor để lấy chuỗi giá trị thuộc tính
+    public function getGiaTriThuocTinhAttribute()
+    {
+        return $this->giaTriThuocTinhs->pluck('giatri')->implode(', ');
+    }
 }
 

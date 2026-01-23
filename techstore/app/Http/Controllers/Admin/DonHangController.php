@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\DonHang;
+use App\Mail\OrderStatusUpdated;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class DonHangController extends Controller
 {
@@ -77,6 +79,16 @@ class DonHangController extends Controller
         }
 
         $donHang->update(['trang_thai' => $newStatus]);
+
+        // Gửi email thông báo cập nhật trạng thái cho khách hàng (chỉ khi trạng thái thay đổi)
+        if ($oldStatus !== $newStatus && $donHang->email_khach) {
+            try {
+                Mail::to($donHang->email_khach)->send(new OrderStatusUpdated($donHang, $oldStatus, $newStatus));
+            } catch (\Exception $e) {
+                // Log lỗi nhưng không dừng quá trình
+                \Log::error('Không thể gửi email cập nhật trạng thái đơn hàng: ' . $e->getMessage());
+            }
+        }
 
         return redirect()->back()
             ->with('success', 'Cập nhật trạng thái đơn hàng thành công!');

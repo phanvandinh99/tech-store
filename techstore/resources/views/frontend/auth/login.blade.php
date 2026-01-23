@@ -57,7 +57,7 @@
                                 <input type="password" name="password" required>
                             </p>
                             <div class="login_submit">
-                                <a href="{{ route('home') }}">Quên mật khẩu?</a>
+                                <a href="{{ route('customer.password.request') }}">Quên mật khẩu?</a>
                                 <label for="remember">
                                     <input id="remember" type="checkbox" name="remember">
                                     Ghi nhớ đăng nhập

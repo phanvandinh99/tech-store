@@ -7,9 +7,12 @@ use App\Models\DonHang;
 use App\Models\ChiTietDonHang;
 use App\Models\BienThe;
 use App\Models\NguoiDung;
+use App\Mail\OrderPlaced;
+use App\Mail\NewOrderNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
 {
@@ -129,6 +132,29 @@ class CheckoutController extends Controller
 
         // Clear cart
         session(['cart' => []]);
+
+        // Gửi email xác nhận đặt hàng cho khách hàng
+        try {
+            Mail::to($donHang->email_khach)->send(new OrderPlaced($donHang));
+        } catch (\Exception $e) {
+            // Log lỗi nhưng không dừng quá trình
+            \Log::error('Không thể gửi email xác nhận đặt hàng: ' . $e->getMessage());
+        }
+
+        // Gửi email thông báo đơn hàng mới cho admin
+        try {
+            $adminEmails = NguoiDung::where('vai_tro', 'admin')
+                                   ->where('trang_thai', 'active')
+                                   ->pluck('email')
+                                   ->toArray();
+            
+            if (!empty($adminEmails)) {
+                Mail::to($adminEmails)->send(new NewOrderNotification($donHang));
+            }
+        } catch (\Exception $e) {
+            // Log lỗi nhưng không dừng quá trình
+            \Log::error('Không thể gửi email thông báo admin: ' . $e->getMessage());
+        }
 
         $message = 'Đặt hàng thành công! Mã đơn hàng: ' . $donHang->ma_don_hang . '. Chúng tôi sẽ liên hệ với bạn sớm nhất.';
         

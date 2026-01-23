@@ -309,3 +309,6 @@ php artisan view:clear
 - Đảm bảo MySQL service đang chạy trước khi chạy migrations
 - Nếu gặp lỗi permission, chạy: `chmod -R 775 storage bootstrap/cache`
 - Để sử dụng SQLite thay vì MySQL, đổi `DB_CONNECTION=sqlite` trong `.env`
+
+
+https://myaccount.google.com/apppasswords

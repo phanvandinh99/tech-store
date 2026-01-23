@@ -68,6 +68,12 @@ Route::prefix('customer')->name('customer.')->group(function () {
     Route::get('/register', [CustomerAuthController::class, 'showRegisterForm'])->name('register');
     Route::post('/register', [CustomerAuthController::class, 'register']);
     Route::post('/logout', [CustomerAuthController::class, 'logout'])->name('logout');
+    
+    // Password Reset Routes
+    Route::get('/password/reset', [App\Http\Controllers\Customer\ForgotPasswordController::class, 'showForgotForm'])->name('password.request');
+    Route::post('/password/email', [App\Http\Controllers\Customer\ForgotPasswordController::class, 'sendResetCode'])->name('password.email');
+    Route::get('/password/verify', [App\Http\Controllers\Customer\ForgotPasswordController::class, 'showVerifyForm'])->name('password.verify');
+    Route::post('/password/reset', [App\Http\Controllers\Customer\ForgotPasswordController::class, 'resetPassword'])->name('password.update');
 });
 
 // Alias for customer routes (shorter URLs)
@@ -83,6 +89,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    
+    // Password Reset Routes
+    Route::get('/password/reset', [App\Http\Controllers\Admin\ForgotPasswordController::class, 'showForgotForm'])->name('password.request');
+    Route::post('/password/email', [App\Http\Controllers\Admin\ForgotPasswordController::class, 'sendResetCode'])->name('password.email');
+    Route::get('/password/verify', [App\Http\Controllers\Admin\ForgotPasswordController::class, 'showVerifyForm'])->name('password.verify');
+    Route::post('/password/reset', [App\Http\Controllers\Admin\ForgotPasswordController::class, 'resetPassword'])->name('password.update');
 
     // Protected admin routes
     Route::middleware(['auth:admin', 'admin'])->group(function () {

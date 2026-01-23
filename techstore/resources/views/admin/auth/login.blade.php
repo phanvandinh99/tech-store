@@ -483,6 +483,13 @@
                         <i class="bi bi-box-arrow-in-right"></i>
                         Đăng nhập
                     </button>
+
+                    <div class="text-center mt-3">
+                        <a href="{{ route('admin.password.request') }}" class="text-decoration-none" style="color: #6b7280; font-size: 0.9rem;">
+                            <i class="bi bi-key me-1"></i>
+                            Quên mật khẩu?
+                        </a>
+                    </div>
                 </form>
             </div>
         </div>
