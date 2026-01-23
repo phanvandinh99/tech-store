@@ -17,7 +17,7 @@
                     </div>
                     <div class="col-md-6">
                         <strong>Thời gian:</strong>
-                        <p>{{ $nhatKy->created_at->format('d/m/Y H:i:s') }}</p>
+                        <p>{{ $nhatKy->created_at ? $nhatKy->created_at->format('d/m/Y H:i:s') : 'N/A' }}</p>
                     </div>
                 </div>
 

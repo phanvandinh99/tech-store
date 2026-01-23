@@ -35,7 +35,7 @@
             </td>
             <td><code>{{ $nk->loai_model }}</code></td>
             <td>{{ Str::limit($nk->mo_ta, 50) }}</td>
-            <td>{{ $nk->created_at->format('d/m/Y H:i') }}</td>
+            <td>{{ $nk->created_at ? $nk->created_at->format('d/m/Y H:i') : 'N/A' }}</td>
             <td>
                 <a href="{{ route('admin.nhatky.show', $nk->id) }}" class="btn btn-sm btn-outline-info" title="Xem chi tiết">
                     <i class="bi bi-eye"></i>

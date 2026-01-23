@@ -9,9 +9,11 @@ class NhatKyHoatDong extends Model
 {
     protected $table = 'nhat_ky_hoat_dong';
     
-    public $timestamps = false;
+    // Bật timestamps để Laravel tự động xử lý created_at và updated_at
+    public $timestamps = true;
     
-    const CREATED_AT = 'created_at';
+    // Chỉ sử dụng created_at, không cần updated_at
+    const UPDATED_AT = null;
 
     protected $fillable = [
         'nguoi_dung_id', 'hanh_dong', 'loai_model', 'id_model',
@@ -21,6 +23,7 @@ class NhatKyHoatDong extends Model
     protected $casts = [
         'gia_tri_cu' => 'array',
         'gia_tri_moi' => 'array',
+        'created_at' => 'datetime',
     ];
 
     public function nguoiDung(): BelongsTo
@@ -47,6 +50,7 @@ class NhatKyHoatDong extends Model
             'gia_tri_moi' => $giaTriMoi,
             'dia_chi_ip' => request()->ip(),
             'trinh_duyet' => request()->userAgent(),
+            'created_at' => now(), // Đảm bảo có created_at
         ]);
     }
 }
