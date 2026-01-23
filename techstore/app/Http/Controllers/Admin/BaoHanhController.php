@@ -57,7 +57,7 @@ class BaoHanhController extends Controller
     public function show($id)
     {
         $yeuCau = YeuCauBaoHanh::with([
-            'nguoiDung', 'bienThe.sanPham', 'donHang.chiTiets', 'anhBaoHanh'
+            'nguoiDung', 'bienThe.sanPham', 'donHang.chiTietDonHangs', 'anhBaoHanh'
         ])->findOrFail($id);
         
         return view('admin.baohanh.show', compact('yeuCau'));
