@@ -20,6 +20,117 @@
     .banner_area {
         margin-bottom: 55px;
     }
+    
+    /* Categories product uniform sizing */
+    .categories_product_inner {
+        max-width: 900px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    
+    .single_categories_product {
+        width: 280px;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        background: #fff;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+    
+    .single_categories_product:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .categories_product_content {
+        flex: 1;
+        padding-right: 15px;
+    }
+    
+    .categories_product_content h4 {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0 0 5px 0;
+        line-height: 1.2;
+        color: #333;
+    }
+    
+    .categories_product_content h4 a {
+        color: #333;
+        text-decoration: none;
+    }
+    
+    .categories_product_content h4 a:hover {
+        color: #007bff;
+    }
+    
+    .categories_product_content p {
+        font-size: 13px;
+        color: #666;
+        margin: 0;
+    }
+    
+    .categories_product_thumb {
+        width: 70px;
+        height: 70px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f9fa;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+    
+    .categories_product_thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .categories_product_thumb:hover img {
+        transform: scale(1.05);
+    }
+    
+    @media (max-width: 768px) {
+        .categories_product_inner {
+            max-width: 100%;
+            gap: 15px;
+        }
+        
+        .single_categories_product {
+            width: 260px;
+            height: 90px;
+            padding: 12px;
+        }
+        
+        .categories_product_content h4 {
+            font-size: 14px;
+        }
+        
+        .categories_product_content p {
+            font-size: 12px;
+        }
+        
+        .categories_product_thumb {
+            width: 60px;
+            height: 60px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .single_categories_product {
+            width: 100%;
+            max-width: 300px;
+        }
+    }
 </style>
 @endpush
 
