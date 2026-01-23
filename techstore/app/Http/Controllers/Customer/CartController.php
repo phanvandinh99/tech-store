@@ -32,7 +32,7 @@ class CartController extends Controller
         
         // Check stock
         if ($variant->so_luong_ton < $request->quantity) {
-            return back()->withErrors(['quantity' => 'Số lượng sản phẩm không đủ trong kho.'])->withInput();
+            return back()->withErrors(['quantity' => 'Sản phẩm trong kho không đáp ứng số lượng mua của khách hàng.'])->withInput();
         }
 
         $cart = session('cart', []);
@@ -41,7 +41,7 @@ class CartController extends Controller
         if (isset($cart[$key])) {
             $newQuantity = $cart[$key]['quantity'] + $request->quantity;
             if ($newQuantity > $variant->so_luong_ton) {
-                return back()->withErrors(['quantity' => 'Số lượng sản phẩm không đủ trong kho.'])->withInput();
+                return back()->withErrors(['quantity' => 'Sản phẩm trong kho không đáp ứng số lượng mua của khách hàng.'])->withInput();
             }
             $cart[$key]['quantity'] = $newQuantity;
         } else {
@@ -84,7 +84,7 @@ class CartController extends Controller
             // Check stock
             $variant = \App\Models\BienThe::findOrFail($cart[$key]['variant_id']);
             if ($variant->so_luong_ton < $request->quantity) {
-                return back()->withErrors(['quantity' => 'Số lượng sản phẩm không đủ trong kho.'])->withInput();
+                return back()->withErrors(['quantity' => 'Sản phẩm trong kho không đáp ứng số lượng mua của khách hàng.'])->withInput();
             }
             
             $cart[$key]['quantity'] = $request->quantity;

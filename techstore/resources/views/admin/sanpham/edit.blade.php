@@ -254,8 +254,10 @@
                             <input type="number" class="form-control" name="gia_von" min="0" step="1000" required>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Số lượng tồn <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control" name="so_luong_ton" min="0" required>
+                            <label class="form-label">Số lượng tồn</label>
+                            <input type="number" class="form-control" value="0" readonly>
+                            <small class="text-muted">Số lượng tồn sẽ được cập nhật thông qua phiếu nhập hàng</small>
+                            <input type="hidden" name="so_luong_ton" value="0">
                         </div>
                         <div class="col-12 mb-3">
                             <label class="form-label">Giá trị thuộc tính</label>
@@ -316,8 +318,10 @@
                             <input type="number" class="form-control" name="gia_von" id="edit_gia_von" min="0" step="1000" required>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Số lượng tồn <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control" name="so_luong_ton" id="edit_so_luong_ton" min="0" required>
+                            <label class="form-label">Số lượng tồn</label>
+                            <input type="number" class="form-control" id="edit_so_luong_ton_display" readonly>
+                            <small class="text-muted">Số lượng tồn chỉ được cập nhật thông qua phiếu nhập hàng</small>
+                            <input type="hidden" name="so_luong_ton" id="edit_so_luong_ton" value="">
                         </div>
                         <div class="col-12 mb-3">
                             <label class="form-label">Giá trị thuộc tính</label>
@@ -404,6 +408,7 @@ function editVariant(id, variant) {
     document.getElementById('edit_sku').value = variantData.sku;
     document.getElementById('edit_gia').value = variantData.gia;
     document.getElementById('edit_gia_von').value = variantData.gia_von;
+    document.getElementById('edit_so_luong_ton_display').value = variantData.so_luong_ton;
     document.getElementById('edit_so_luong_ton').value = variantData.so_luong_ton;
     
     // Populate giá trị thuộc tính

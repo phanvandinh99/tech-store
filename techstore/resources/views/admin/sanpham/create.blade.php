@@ -93,6 +93,11 @@
                     <!-- Biến thể sản phẩm -->
                     <hr>
                     <h5 class="mb-3"><i class="bi bi-box-seam"></i> Biến thể sản phẩm</h5>
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> 
+                        <strong>Lưu ý về quản lý tồn kho:</strong> Số lượng tồn kho sẽ được đặt về 0 khi tạo sản phẩm mới. 
+                        Để cập nhật số lượng tồn kho, vui lòng sử dụng chức năng "Phiếu nhập hàng".
+                    </div>
                     <div id="bienTheContainer">
                         <div class="bien-the-item card mb-3">
                             <div class="card-header bg-light">
@@ -105,22 +110,22 @@
                             </div>
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-md-3 mb-3">
+                                    <div class="col-md-4 mb-3">
                                         <label class="form-label">SKU <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" name="bien_the[0][sku]" required>
                                     </div>
-                                    <div class="col-md-3 mb-3">
+                                    <div class="col-md-4 mb-3">
                                         <label class="form-label">Giá bán (VNĐ) <span class="text-danger">*</span></label>
                                         <input type="number" class="form-control" name="bien_the[0][gia]" min="0" step="1000" required>
                                     </div>
-                                    <div class="col-md-3 mb-3">
+                                    <div class="col-md-4 mb-3">
                                         <label class="form-label">Giá vốn (VNĐ) <span class="text-danger">*</span></label>
                                         <input type="number" class="form-control" name="bien_the[0][gia_von]" min="0" step="1000" required>
                                     </div>
-                                    <div class="col-md-3 mb-3">
-                                        <label class="form-label">Số lượng tồn <span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control" name="bien_the[0][so_luong_ton]" min="0" required>
-                                    </div>
+                                    <!-- Số lượng tồn sẽ được cập nhật thông qua phiếu nhập hàng -->
+                                    <input type="hidden" name="bien_the[0][so_luong_ton]" value="0">
+                                </div>
+                                    <input type="hidden" name="bien_the[0][so_luong_ton]" value="0">
                                 </div>
                                 
                                 <!-- Giá trị thuộc tính cho biến thể -->
@@ -300,22 +305,20 @@ function addBienThe() {
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-3 mb-3">
+                <div class="col-md-4 mb-3">
                     <label class="form-label">SKU <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" name="bien_the[${bienTheIndex}][sku]" required>
                 </div>
-                <div class="col-md-3 mb-3">
+                <div class="col-md-4 mb-3">
                     <label class="form-label">Giá bán (VNĐ) <span class="text-danger">*</span></label>
                     <input type="number" class="form-control" name="bien_the[${bienTheIndex}][gia]" min="0" step="1000" required>
                 </div>
-                <div class="col-md-3 mb-3">
+                <div class="col-md-4 mb-3">
                     <label class="form-label">Giá vốn (VNĐ) <span class="text-danger">*</span></label>
                     <input type="number" class="form-control" name="bien_the[${bienTheIndex}][gia_von]" min="0" step="1000" required>
                 </div>
-                <div class="col-md-3 mb-3">
-                    <label class="form-label">Số lượng tồn <span class="text-danger">*</span></label>
-                    <input type="number" class="form-control" name="bien_the[${bienTheIndex}][so_luong_ton]" min="0" required>
-                </div>
+                <!-- Số lượng tồn sẽ được cập nhật thông qua phiếu nhập hàng -->
+                <input type="hidden" name="bien_the[${bienTheIndex}][so_luong_ton]" value="0">
             </div>
             <div class="row mb-3">
                 <div class="col-12">

@@ -100,7 +100,7 @@ class SanPhamController extends Controller
             'bien_the.*.sku' => 'required|string|max:100',
             'bien_the.*.gia' => 'required|numeric|min:0',
             'bien_the.*.gia_von' => 'required|numeric|min:0',
-            'bien_the.*.so_luong_ton' => 'required|integer|min:0',
+            'bien_the.*.so_luong_ton' => 'nullable|integer|min:0',
             'bien_the.*.giatri_thuoctinh_ids' => 'nullable|array',
             'bien_the.*.giatri_thuoctinh_ids.*' => 'exists:giatri_thuoctinh,id',
         ];
@@ -157,7 +157,7 @@ class SanPhamController extends Controller
                     'sku' => $sku,
                     'gia' => $bt['gia'],
                     'gia_von' => $bt['gia_von'],
-                    'so_luong_ton' => $bt['so_luong_ton'],
+                    'so_luong_ton' => $bt['so_luong_ton'] ?? 0,
                 ]);
 
                 // Attach giá trị thuộc tính cho biến thể (filter bỏ giá trị rỗng)
@@ -405,7 +405,7 @@ class SanPhamController extends Controller
             'sku' => $sku,
             'gia' => $request->gia,
             'gia_von' => $request->gia_von,
-            'so_luong_ton' => $request->so_luong_ton,
+            'so_luong_ton' => $request->so_luong_ton ?? 0,
         ]);
 
         if (!empty($giatriIds)) {
@@ -457,7 +457,7 @@ class SanPhamController extends Controller
             'sku' => $sku,
             'gia' => $request->gia,
             'gia_von' => $request->gia_von,
-            'so_luong_ton' => $request->so_luong_ton,
+            'so_luong_ton' => $request->so_luong_ton ?? $bienThe->so_luong_ton,
         ]);
 
         // Sync giá trị thuộc tính (chỉ sync các giá trị không rỗng)

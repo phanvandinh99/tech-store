@@ -29,7 +29,7 @@ class CheckoutController extends Controller
             $variant = BienThe::find($item['variant_id']);
             if (!$variant || $variant->so_luong_ton < $item['quantity']) {
                 return redirect()->route('cart.index')
-                    ->with('error', 'Một số sản phẩm trong giỏ hàng không còn đủ số lượng. Vui lòng kiểm tra lại!');
+                    ->with('error', 'Sản phẩm trong kho không đáp ứng số lượng mua của khách hàng. Vui lòng kiểm tra lại!');
             }
         }
 
@@ -62,7 +62,7 @@ class CheckoutController extends Controller
             $variant = BienThe::find($item['variant_id']);
             if (!$variant || $variant->so_luong_ton < $item['quantity']) {
                 return redirect()->route('cart.index')
-                    ->with('error', 'Một số sản phẩm không còn đủ số lượng. Vui lòng kiểm tra lại!');
+                    ->with('error', 'Sản phẩm trong kho không đáp ứng số lượng mua của khách hàng. Vui lòng kiểm tra lại!');
             }
         }
 

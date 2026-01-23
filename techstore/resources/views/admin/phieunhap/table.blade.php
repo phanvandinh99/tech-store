@@ -35,7 +35,7 @@
         <tbody>
             @forelse($phieuNhaps as $phieuNhap)
             <tr>
-                <td>#{{ $phieuNhap->id }}</td>
+                <td>{{ $phieuNhap->ma_phieu ?? '#' . $phieuNhap->id }}</td>
                 <td>
                     @if($phieuNhap->nhaCungCap)
                         <strong>{{ $phieuNhap->nhaCungCap->ten }}</strong>

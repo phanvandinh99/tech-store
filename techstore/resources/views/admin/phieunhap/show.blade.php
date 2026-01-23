@@ -1,13 +1,13 @@
 @extends('admin.layout')
 
-@section('title', 'Chi tiết Phiếu nhập #' . $phieuNhap->id)
+@section('title', 'Chi tiết Phiếu nhập ' . ($phieuNhap->ma_phieu ?? '#' . $phieuNhap->id))
 
 @section('content')
 <div class="row">
     <div class="col-12">
         <div class="card mb-3">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h4 class="mb-0"><i class="bi bi-file-text"></i> Phiếu nhập #{{ $phieuNhap->id }}</h4>
+                <h4 class="mb-0"><i class="bi bi-file-text"></i> Phiếu nhập {{ $phieuNhap->ma_phieu ?? '#' . $phieuNhap->id }}</h4>
                 <div>
                     <a href="{{ route('admin.phieunhap.index') }}" class="btn btn-secondary btn-sm">
                         <i class="bi bi-arrow-left"></i> Quay lại
@@ -23,7 +23,7 @@
                         <table class="table table-borderless">
                             <tr>
                                 <th width="40%">Mã phiếu:</th>
-                                <td><strong>#{{ $phieuNhap->id }}</strong></td>
+                                <td><strong>{{ $phieuNhap->ma_phieu ?? '#' . $phieuNhap->id }}</strong></td>
                             </tr>
                             <tr>
                                 <th>Nhà cung cấp:</th>

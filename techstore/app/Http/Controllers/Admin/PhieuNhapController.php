@@ -96,10 +96,21 @@ class PhieuNhapController extends Controller
         ]);
 
         DB::transaction(function () use ($request) {
+            // Tạo mã phiếu nhập unique
+            $maPhieu = $this->generateUniqueReceiptCode();
+            
+            // Tính tổng tiền
+            $tongTien = collect($request->chi_tiet)->sum(function ($ct) {
+                return $ct['so_luong_nhap'] * $ct['gia_von_nhap'];
+            });
+            
             // Tạo phiếu nhập
             $phieuNhap = PhieuNhap::create([
                 'nha_cung_cap_id' => $request->nha_cung_cap_id,
+                'ma_phieu' => $maPhieu,
                 'ghi_chu' => $request->ghi_chu,
+                'tong_tien' => $tongTien,
+                'nguoi_tao_id' => auth('admin')->id(),
             ]);
 
             // Tạo chi tiết và cập nhật tồn kho
@@ -162,6 +173,33 @@ class PhieuNhapController extends Controller
 
         return redirect()->route('admin.phieunhap.index')
             ->with('success', 'Xóa phiếu nhập thành công!');
+    }
+
+    /**
+     * Generate unique receipt code
+     * Format: PN-YYYYMMDD-XXXX (PN = Phiếu Nhập)
+     */
+    private function generateUniqueReceiptCode(): string
+    {
+        $date = now()->format('Ymd');
+        $prefix = "PN-{$date}-";
+        
+        // Find the latest receipt code for today
+        $latestCode = PhieuNhap::where('ma_phieu', 'like', $prefix . '%')
+            ->orderBy('ma_phieu', 'desc')
+            ->value('ma_phieu');
+        
+        if ($latestCode) {
+            // Extract the sequence number and increment
+            $sequence = (int) substr($latestCode, -4) + 1;
+        } else {
+            $sequence = 1;
+        }
+        
+        // Format with leading zeros
+        $sequenceStr = str_pad($sequence, 4, '0', STR_PAD_LEFT);
+        
+        return $prefix . $sequenceStr;
     }
 }
 
