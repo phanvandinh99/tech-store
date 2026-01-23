@@ -81,16 +81,21 @@
                 </h4>
                 
                 <!-- Rating -->
-                @if($reviewCount > 0)
                 <div class="product_rating">
-                    <ul>
-                        @for($i = 1; $i <= 5; $i++)
-                            <li><a href="#"><i class="fa fa-star{{ $i <= $avgRating ? '' : '-o' }}"></i></a></li>
-                        @endfor
-                    </ul>
-                    <span>({{ $reviewCount }})</span>
+                    @if($reviewCount > 0)
+                        <ul>
+                            @for($i = 1; $i <= 5; $i++)
+                                <li><a href="#"><i class="fa{{ $i <= $avgRating ? '' : 'r' }} fa-star"></i></a></li>
+                            @endfor
+                        </ul>
+                    @else
+                        <ul>
+                            @for($i = 1; $i <= 5; $i++)
+                                <li><a href="#"><i class="far fa-star"></i></a></li>
+                            @endfor
+                        </ul>
+                    @endif
                 </div>
-                @endif
                 
                 <div class="price_box">
                     @if($minPrice)
