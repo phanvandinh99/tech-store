@@ -53,8 +53,17 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        $product = SanPham::with(['danhMuc', 'bienThes.giaTriThuocTinhs', 'anhSanPhams', 'thuocTinhs.giaTriThuocTinhs'])
-            ->findOrFail($id);
+        $product = SanPham::with([
+            'danhMuc', 
+            'bienThes.giaTriThuocTinhs', 
+            'anhSanPhams', 
+            'thuocTinhs.giaTriThuocTinhs',
+            'danhGias' => function($query) {
+                $query->where('trang_thai', 'approved')
+                      ->with(['nguoiDung', 'anhDanhGia'])
+                      ->orderBy('created_at', 'desc');
+            }
+        ])->findOrFail($id);
 
         // Related products (same category)
         $relatedProducts = SanPham::where('danhmuc_id', $product->danhmuc_id)

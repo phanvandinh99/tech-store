@@ -6,6 +6,7 @@
     <title>@yield('title', 'Tech Store - Cửa hàng công nghệ hàng đầu')</title>
     <meta name="description" content="@yield('description', 'Tech Store - Cửa hàng công nghệ hàng đầu Việt Nam')">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/img/favicon.ico') }}">
 
@@ -14,6 +15,37 @@
     <link rel="stylesheet" href="{{ asset('assets/css/plugins.css') }}">
     <!-- Main Style CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    
+    <!-- Icon Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/4.6.3/css/ionicons.min.css">
+    
+    <!-- Icon Compatibility CSS -->
+    <style>
+        /* Ensure icons display properly */
+        .fa, .fas, .far, .fal, .fab {
+            font-family: "Font Awesome 6 Free", "Font Awesome 6 Pro", "Font Awesome 6 Brands" !important;
+        }
+        
+        .ion, [class^="ion-"], [class*=" ion-"] {
+            font-family: "Ionicons" !important;
+            font-style: normal;
+            font-weight: normal;
+            font-variant: normal;
+            text-transform: none;
+            line-height: 1;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* Fix for missing icons - show text fallback */
+        .fa:before, .fas:before, .far:before, .fal:before, .fab:before,
+        .ion:before, [class^="ion-"]:before, [class*=" ion-"]:before {
+            display: inline-block;
+            text-rendering: auto;
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
     
     <!-- Custom Product Image Styles -->
     <style>

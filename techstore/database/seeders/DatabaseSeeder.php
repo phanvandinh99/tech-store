@@ -15,6 +15,9 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Dữ liệu đã được tạo sẵn trong Database/tech_store_db.sql
-        // Không cần chạy seeder
+        // Chạy seeder để tạo dữ liệu đánh giá mẫu
+        $this->call([
+            DanhGiaSeeder::class,
+        ]);
     }
 }

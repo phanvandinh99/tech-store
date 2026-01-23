@@ -208,6 +208,110 @@
         border-radius: 0.25rem;
         margin: 1rem 0;
     }
+    .reviews_wrapper {
+        padding: 1rem 0;
+    }
+    .reviews_summary {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 1rem;
+    }
+    .rating_summary .score {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #ffc107;
+        margin-right: 1rem;
+    }
+    .rating_summary .stars {
+        display: inline-block;
+        margin-right: 1rem;
+    }
+    .rating_bar {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        gap: 1rem;
+    }
+    .rating_bar .star_label {
+        width: 60px;
+        font-size: 0.9rem;
+    }
+    .rating_bar .progress {
+        flex: 1;
+        height: 8px;
+    }
+    .rating_bar .star_count {
+        width: 30px;
+        text-align: right;
+        font-size: 0.9rem;
+    }
+    .single_review {
+        border-bottom: 1px solid #f5f5f5;
+        padding: 1.5rem 0;
+    }
+    .single_review:last-child {
+        border-bottom: none;
+    }
+    .review_header {
+        display: flex;
+        justify-content: between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+    .reviewer_info h5 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1rem;
+    }
+    .review_rating {
+        margin-bottom: 0.5rem;
+    }
+    .review_date {
+        color: #666;
+        font-size: 0.9rem;
+    }
+    .review_content p {
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+    .review_images {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    .review_image {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        border: 1px solid #ddd;
+        transition: all 0.3s;
+    }
+    .review_image:hover {
+        transform: scale(1.05);
+        border-color: #007bff;
+    }
+    .more_images {
+        width: 80px;
+        height: 80px;
+        background: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 0.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: #666;
+    }
+    .rating-text {
+        color: #666;
+        font-size: 0.9rem;
+        margin-left: 0.5rem;
+    }
+    .product_rating ul {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
 </style>
 @endpush
 
@@ -279,11 +383,24 @@
                                 
                                 <div class="product_rating">
                                     <ul>
-                                        <li><a href="#"><i class="ion-android-star-outline"></i></a></li>
-                                        <li><a href="#"><i class="ion-android-star-outline"></i></a></li>
-                                        <li><a href="#"><i class="ion-android-star-outline"></i></a></li>
-                                        <li><a href="#"><i class="ion-android-star-outline"></i></a></li>
-                                        <li><a href="#"><i class="ion-android-star-outline"></i></a></li>
+                                        @php
+                                            $productRating = $product->danhGias->where('trang_thai', 'approved')->avg('so_sao') ?? 0;
+                                            $reviewCount = $product->danhGias->where('trang_thai', 'approved')->count();
+                                        @endphp
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <li>
+                                                <a href="#reviews">
+                                                    @if($i <= $productRating)
+                                                        <i class="ion-android-star"></i>
+                                                    @else
+                                                        <i class="ion-android-star-outline"></i>
+                                                    @endif
+                                                </a>
+                                            </li>
+                                        @endfor
+                                        @if($reviewCount > 0)
+                                            <li><span class="rating-text">({{ $reviewCount }} đánh giá)</span></li>
+                                        @endif
                                     </ul>
                                 </div>
 
@@ -398,6 +515,11 @@
                                     <li class="nav-item">
                                         <a class="nav-link" data-bs-toggle="tab" href="#sheet" role="tab" aria-controls="sheet" aria-selected="false">Thông số kỹ thuật</a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-bs-toggle="tab" href="#reviews" role="tab" aria-controls="reviews" aria-selected="false">
+                                            Đánh giá ({{ $product->danhGias->where('trang_thai', 'approved')->count() }})
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                             <div class="tab-content">
@@ -434,6 +556,113 @@
                                                 @endif
                                             </tbody>
                                         </table>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="reviews" role="tabpanel">
+                                    <div class="reviews_wrapper">
+                                        @php
+                                            $approvedReviews = $product->danhGias->where('trang_thai', 'approved');
+                                            $averageRating = $approvedReviews->count() > 0 ? $approvedReviews->avg('so_sao') : 0;
+                                            $totalReviews = $approvedReviews->count();
+                                        @endphp
+                                        
+                                        <!-- Review Summary -->
+                                        <div class="reviews_summary mb-4">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="rating_summary">
+                                                        <h4>Đánh giá trung bình</h4>
+                                                        <div class="rating_score">
+                                                            <span class="score">{{ number_format($averageRating, 1) }}</span>
+                                                            <div class="stars">
+                                                                @for($i = 1; $i <= 5; $i++)
+                                                                    @if($i <= $averageRating)
+                                                                        <i class="fas fa-star text-warning"></i>
+                                                                    @else
+                                                                        <i class="far fa-star text-muted"></i>
+                                                                    @endif
+                                                                @endfor
+                                                            </div>
+                                                            <span class="total_reviews">({{ $totalReviews }} đánh giá)</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="rating_breakdown">
+                                                        @for($star = 5; $star >= 1; $star--)
+                                                            @php
+                                                                $starCount = $approvedReviews->where('so_sao', $star)->count();
+                                                                $percentage = $totalReviews > 0 ? ($starCount / $totalReviews) * 100 : 0;
+                                                            @endphp
+                                                            <div class="rating_bar">
+                                                                <span class="star_label">{{ $star }} sao</span>
+                                                                <div class="progress">
+                                                                    <div class="progress-bar bg-warning" style="width: {{ $percentage }}%"></div>
+                                                                </div>
+                                                                <span class="star_count">{{ $starCount }}</span>
+                                                            </div>
+                                                        @endfor
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Reviews List -->
+                                        <div class="reviews_list">
+                                            @if($approvedReviews->count() > 0)
+                                                @foreach($approvedReviews->sortByDesc('created_at')->take(5) as $review)
+                                                    <div class="single_review">
+                                                        <div class="review_header">
+                                                            <div class="reviewer_info">
+                                                                <h5>{{ $review->nguoiDung->ho_ten ?? 'Khách hàng' }}</h5>
+                                                                <div class="review_rating">
+                                                                    @for($i = 1; $i <= 5; $i++)
+                                                                        @if($i <= $review->so_sao)
+                                                                            <i class="fas fa-star text-warning"></i>
+                                                                        @else
+                                                                            <i class="far fa-star text-muted"></i>
+                                                                        @endif
+                                                                    @endfor
+                                                                </div>
+                                                            </div>
+                                                            <div class="review_date">
+                                                                <span>{{ $review->created_at->format('d/m/Y') }}</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="review_content">
+                                                            <p>{{ $review->noi_dung }}</p>
+                                                            @if($review->anhDanhGia->count() > 0)
+                                                                <div class="review_images">
+                                                                    @foreach($review->anhDanhGia->take(4) as $image)
+                                                                        <img src="{{ asset('storage/' . $image->duong_dan) }}" 
+                                                                             alt="Review Image" 
+                                                                             class="review_image"
+                                                                             onclick="showReviewImage('{{ asset('storage/' . $image->duong_dan) }}')">
+                                                                    @endforeach
+                                                                    @if($review->anhDanhGia->count() > 4)
+                                                                        <div class="more_images">+{{ $review->anhDanhGia->count() - 4 }}</div>
+                                                                    @endif
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                                
+                                                @if($approvedReviews->count() > 5)
+                                                    <div class="text-center mt-3">
+                                                        <button class="btn btn-outline-primary" onclick="loadMoreReviews()">
+                                                            Xem thêm đánh giá
+                                                        </button>
+                                                    </div>
+                                                @endif
+                                            @else
+                                                <div class="no_reviews text-center py-4">
+                                                    <i class="fas fa-star fa-3x text-muted mb-3"></i>
+                                                    <h5>Chưa có đánh giá nào</h5>
+                                                    <p class="text-muted">Hãy là người đầu tiên đánh giá sản phẩm này!</p>
+                                                </div>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -512,6 +741,21 @@
             </div>
         </section>
         @endif
+    </div>
+</div>
+
+<!-- Review Image Modal -->
+<div class="modal fade" id="reviewImageModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Hình ảnh đánh giá</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="reviewModalImage" src="" class="img-fluid" alt="Review Image">
+            </div>
+        </div>
     </div>
 </div>
 
@@ -618,6 +862,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+// Review image modal functions
+function showReviewImage(imageSrc) {
+    document.getElementById('reviewModalImage').src = imageSrc;
+    new bootstrap.Modal(document.getElementById('reviewImageModal')).show();
+}
+
+function loadMoreReviews() {
+    // This would typically load more reviews via AJAX
+    alert('Tính năng tải thêm đánh giá sẽ được phát triển trong tương lai');
+}
 </script>
 @endpush
 @endsection

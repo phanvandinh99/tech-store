@@ -190,6 +190,8 @@
                                             <i class="fa fa-user"></i>Tài khoản của tôi</a></li>
                                         <li><a href="{{ route('orders.index') }}">
                                             <i class="fa fa-shopping-bag"></i>Đơn hàng của tôi</a></li>
+                                        <li><a href="{{ route('reviews.index') }}">
+                                            <i class="fa fa-star"></i>Đánh giá của tôi</a></li>
                                         <li><a href="{{ route('warranty.index') }}">
                                             <i class="fa fa-wrench"></i>Yêu cầu bảo hành</a></li>
                                         <li><a href="#">

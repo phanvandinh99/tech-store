@@ -276,6 +276,9 @@
                                     <th>Giá</th>
                                     <th>Số lượng</th>
                                     <th>Thành tiền</th>
+                                    @if($order->trang_thai == 'hoan_thanh')
+                                        <th>Đánh giá</th>
+                                    @endif
                                 </tr>
                             </thead>
                             <tbody>
@@ -305,6 +308,26 @@
                                     <td class="item-price">{{ number_format($item->gia_luc_mua) }} đ</td>
                                     <td>{{ $item->so_luong }}</td>
                                     <td class="item-price">{{ number_format($item->thanh_tien) }} đ</td>
+                                    @if($order->trang_thai == 'hoan_thanh')
+                                        <td>
+                                            @php
+                                                $existingReview = \App\Models\DanhGia::where('nguoi_dung_id', auth('customer')->id())
+                                                    ->where('sanpham_id', $item->sanpham_id)
+                                                    ->where('donhang_id', $order->id)
+                                                    ->first();
+                                            @endphp
+                                            @if($existingReview)
+                                                <a href="{{ route('reviews.show', $existingReview->id) }}" class="btn btn-sm btn-outline-success">
+                                                    <i class="fas fa-star"></i> Xem đánh giá
+                                                </a>
+                                            @else
+                                                <a href="{{ route('reviews.create', ['donhang_id' => $order->id, 'sanpham_id' => $item->sanpham_id]) }}" 
+                                                   class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-star"></i> Đánh giá
+                                                </a>
+                                            @endif
+                                        </td>
+                                    @endif
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -388,6 +411,11 @@
                                 <i class="fa fa-times"></i> Hủy đơn hàng
                             </button>
                         </form>
+                    @endif
+                    @if($order->trang_thai == 'hoan_thanh')
+                        <a href="{{ route('reviews.index') }}" class="btn btn-outline-primary w-100 mb-2">
+                            <i class="fas fa-star"></i> Xem đánh giá của tôi
+                        </a>
                     @endif
                     <a href="{{ route('orders.index') }}" class="btn btn-outline-secondary w-100">
                         <i class="fa fa-arrow-left"></i> Quay lại danh sách

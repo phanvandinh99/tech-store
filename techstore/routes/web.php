@@ -59,6 +59,17 @@ Route::middleware('auth:customer')->group(function () {
         Route::post('/', [WarrantyController::class, 'store'])->name('store');
         Route::get('/{id}', [WarrantyController::class, 'show'])->name('show');
     });
+
+    // Review Routes
+    Route::prefix('reviews')->name('reviews.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Customer\ReviewController::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Customer\ReviewController::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Customer\ReviewController::class, 'store'])->name('store');
+        Route::get('/{id}', [App\Http\Controllers\Customer\ReviewController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [App\Http\Controllers\Customer\ReviewController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [App\Http\Controllers\Customer\ReviewController::class, 'update'])->name('update');
+        Route::delete('/images/{id}', [App\Http\Controllers\Customer\ReviewController::class, 'deleteImage'])->name('deleteImage');
+    });
 });
 
 // Customer Auth Routes
