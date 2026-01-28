@@ -58,7 +58,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #f8f9fa;
+            background: #ffffffff;
         }
         
         .product_thumb a {

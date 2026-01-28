@@ -814,7 +814,7 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     display: block;
     line-height: 39px;
     text-align: center;
-    border: 1px solid #222222;
+    /* border: 1px solid #222222; */
 }
 
 @media only screen and (max-width: 767px) {

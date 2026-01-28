@@ -5,7 +5,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="canvas_open">
-                    <a href="javascript:void(0)"><i class="ion-navicon"></i></a>
+                    <a href="javascript:void(0)"><i class="fa fa-list-ul"></i></a>
                 </div>
                 <div class="Offcanvas_menu_wrapper">
                     <div class="canvas_close">
