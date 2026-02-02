@@ -4,7 +4,7 @@
             <tr>
                 <th class="sortable {{ request('sort_by') == 'id' ? 'sort-' . request('sort_order', 'desc') : '' }}" 
                     data-sort="id" 
-                    style="width: 8%;">
+                    style="width: 6%;">
                     ID
                     <span class="sort-icon">
                         <i class="bi bi-arrow-down-up"></i>
@@ -12,17 +12,18 @@
                 </th>
                 <th class="sortable {{ request('sort_by') == 'ten' ? 'sort-' . request('sort_order', 'desc') : '' }}" 
                     data-sort="ten"
-                    style="width: 30%;">
+                    style="width: 25%;">
                     Tên sản phẩm
                     <span class="sort-icon">
                         <i class="bi bi-arrow-down-up"></i>
                     </span>
                 </th>
-                <th style="width: 18%;">Danh mục</th>
-                <th style="width: 12%;">Số biến thể</th>
+                <th style="width: 15%;">Danh mục</th>
+                <th style="width: 15%;">Nhà cung cấp</th>
+                <th style="width: 10%;">Số biến thể</th>
                 <th class="sortable {{ request('sort_by') == 'created_at' ? 'sort-' . request('sort_order', 'desc') : '' }}" 
                     data-sort="created_at" 
-                    style="width: 18%;">
+                    style="width: 15%;">
                     Ngày tạo
                     <span class="sort-icon">
                         <i class="bi bi-arrow-down-up"></i>
@@ -38,6 +39,9 @@
                 <td>{{ $sanPham->ten }}</td>
                 <td>
                     <small class="text-muted">{{ $sanPham->danhMuc->ten ?? 'N/A' }}</small>
+                </td>
+                <td>
+                    <small class="text-muted">{{ $sanPham->nhaCungCap->ten ?? 'N/A' }}</small>
                 </td>
                 <td>
                     <span class="badge bg-info">{{ $sanPham->bienThes->count() }}</span>

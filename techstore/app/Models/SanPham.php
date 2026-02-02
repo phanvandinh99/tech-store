@@ -11,11 +11,21 @@ class SanPham extends Model
 {
     protected $table = 'sanpham';
     
-    protected $fillable = ['ten', 'slug', 'danhmuc_id', 'thuong_hieu_id', 'mo_ta_ngan', 'mo_ta_chi_tiet', 'trang_thai', 'luot_xem', 'luot_ban'];
+    protected $fillable = ['ten', 'slug', 'danhmuc_id', 'thuong_hieu_id', 'nhacungcap_id', 'mo_ta_ngan', 'mo_ta_chi_tiet', 'trang_thai', 'luot_xem', 'luot_ban'];
 
     public function danhMuc(): BelongsTo
     {
         return $this->belongsTo(DanhMuc::class, 'danhmuc_id');
+    }
+
+    public function thuongHieu(): BelongsTo
+    {
+        return $this->belongsTo(ThuongHieu::class, 'thuong_hieu_id');
+    }
+
+    public function nhaCungCap(): BelongsTo
+    {
+        return $this->belongsTo(NhaCungCap::class, 'nhacungcap_id');
     }
 
     public function thuocTinhs(): BelongsToMany

@@ -59,6 +59,41 @@
                                     @enderror
                                 </div>
                             </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="nhacungcap_id" class="form-label">Nhà cung cấp <span class="text-danger">*</span></label>
+                                    <select class="form-select @error('nhacungcap_id') is-invalid @enderror" 
+                                            id="nhacungcap_id" name="nhacungcap_id" required>
+                                        <option value="">Chọn nhà cung cấp</option>
+                                        @foreach($nhaCungCaps as $nhaCungCap)
+                                            <option value="{{ $nhaCungCap->id }}" 
+                                                {{ old('nhacungcap_id', $sanPham->nhacungcap_id) == $nhaCungCap->id ? 'selected' : '' }}>
+                                                {{ $nhaCungCap->ten }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('nhacungcap_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="thuong_hieu_id" class="form-label">Thương hiệu</label>
+                                    <select class="form-select @error('thuong_hieu_id') is-invalid @enderror" 
+                                            id="thuong_hieu_id" name="thuong_hieu_id">
+                                        <option value="">Chọn thương hiệu</option>
+                                        @foreach($thuongHieus as $thuongHieu)
+                                            <option value="{{ $thuongHieu->id }}" 
+                                                {{ old('thuong_hieu_id', $sanPham->thuong_hieu_id) == $thuongHieu->id ? 'selected' : '' }}>
+                                                {{ $thuongHieu->ten }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('thuong_hieu_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
                             <div class="mb-3">
                                 <label for="mota" class="form-label">Mô tả</label>
                                 <textarea class="form-control @error('mota') is-invalid @enderror" 

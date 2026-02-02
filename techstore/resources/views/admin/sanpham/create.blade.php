@@ -40,6 +40,39 @@
                         </div>
                     </div>
                     
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nhacungcap_id" class="form-label">Nhà cung cấp <span class="text-danger">*</span></label>
+                            <select class="form-select @error('nhacungcap_id') is-invalid @enderror" 
+                                    id="nhacungcap_id" name="nhacungcap_id" required>
+                                <option value="">Chọn nhà cung cấp</option>
+                                @foreach($nhaCungCaps as $nhaCungCap)
+                                    <option value="{{ $nhaCungCap->id }}" {{ old('nhacungcap_id') == $nhaCungCap->id ? 'selected' : '' }}>
+                                        {{ $nhaCungCap->ten }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('nhacungcap_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="thuong_hieu_id" class="form-label">Thương hiệu</label>
+                            <select class="form-select @error('thuong_hieu_id') is-invalid @enderror" 
+                                    id="thuong_hieu_id" name="thuong_hieu_id">
+                                <option value="">Chọn thương hiệu</option>
+                                @foreach($thuongHieus as $thuongHieu)
+                                    <option value="{{ $thuongHieu->id }}" {{ old('thuong_hieu_id') == $thuongHieu->id ? 'selected' : '' }}>
+                                        {{ $thuongHieu->ten }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('thuong_hieu_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    
                     <div class="mb-3">
                         <label for="mota" class="form-label">Mô tả</label>
                         <textarea class="form-control @error('mota') is-invalid @enderror" 
@@ -110,22 +143,23 @@
                             </div>
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-md-4 mb-3">
+                                    <div class="col-md-3 mb-3">
                                         <label class="form-label">SKU <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" name="bien_the[0][sku]" required>
                                     </div>
-                                    <div class="col-md-4 mb-3">
+                                    <div class="col-md-3 mb-3">
                                         <label class="form-label">Giá bán (VNĐ) <span class="text-danger">*</span></label>
                                         <input type="number" class="form-control" name="bien_the[0][gia]" min="0" step="1000" required>
                                     </div>
-                                    <div class="col-md-4 mb-3">
+                                    <div class="col-md-3 mb-3">
                                         <label class="form-label">Giá vốn (VNĐ) <span class="text-danger">*</span></label>
                                         <input type="number" class="form-control" name="bien_the[0][gia_von]" min="0" step="1000" required>
                                     </div>
-                                    <!-- Số lượng tồn sẽ được cập nhật thông qua phiếu nhập hàng -->
-                                    <input type="hidden" name="bien_the[0][so_luong_ton]" value="0">
-                                </div>
-                                    <input type="hidden" name="bien_the[0][so_luong_ton]" value="0">
+                                    <div class="col-md-3 mb-3">
+                                        <label class="form-label">Số lượng tồn kho</label>
+                                        <input type="number" class="form-control" name="bien_the[0][so_luong_ton]" min="0" value="0">
+                                        <small class="text-muted">Có thể cập nhật sau qua phiếu nhập hàng</small>
+                                    </div>
                                 </div>
                                 
                                 <!-- Giá trị thuộc tính cho biến thể -->
@@ -305,20 +339,23 @@ function addBienThe() {
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-4 mb-3">
+                <div class="col-md-3 mb-3">
                     <label class="form-label">SKU <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" name="bien_the[${bienTheIndex}][sku]" required>
                 </div>
-                <div class="col-md-4 mb-3">
+                <div class="col-md-3 mb-3">
                     <label class="form-label">Giá bán (VNĐ) <span class="text-danger">*</span></label>
                     <input type="number" class="form-control" name="bien_the[${bienTheIndex}][gia]" min="0" step="1000" required>
                 </div>
-                <div class="col-md-4 mb-3">
+                <div class="col-md-3 mb-3">
                     <label class="form-label">Giá vốn (VNĐ) <span class="text-danger">*</span></label>
                     <input type="number" class="form-control" name="bien_the[${bienTheIndex}][gia_von]" min="0" step="1000" required>
                 </div>
-                <!-- Số lượng tồn sẽ được cập nhật thông qua phiếu nhập hàng -->
-                <input type="hidden" name="bien_the[${bienTheIndex}][so_luong_ton]" value="0">
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Số lượng tồn kho</label>
+                    <input type="number" class="form-control" name="bien_the[${bienTheIndex}][so_luong_ton]" min="0" value="0">
+                    <small class="text-muted">Có thể cập nhật sau qua phiếu nhập hàng</small>
+                </div>
             </div>
             <div class="row mb-3">
                 <div class="col-12">

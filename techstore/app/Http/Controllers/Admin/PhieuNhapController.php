@@ -62,7 +62,7 @@ class PhieuNhapController extends Controller
     public function create()
     {
         $nhaCungCaps = NhaCungCap::all();
-        $sanPhams = SanPham::with(['bienThes', 'danhMuc'])->get();
+        $sanPhams = SanPham::with(['bienThes', 'danhMuc', 'nhaCungCap'])->get();
         
         // Format dữ liệu sản phẩm cho JavaScript
         $sanPhamsFormatted = $sanPhams->map(function($sp) {
@@ -70,6 +70,8 @@ class PhieuNhapController extends Controller
                 'id' => $sp->id,
                 'ten' => $sp->ten,
                 'danh_muc' => $sp->danhMuc->ten ?? '',
+                'nha_cung_cap_id' => $sp->nhacungcap_id,
+                'nha_cung_cap' => $sp->nhaCungCap->ten ?? '',
                 'bien_thes' => $sp->bienThes->map(function($bt) {
                     return [
                         'id' => $bt->id,

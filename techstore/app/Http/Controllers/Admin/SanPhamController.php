@@ -18,7 +18,7 @@ class SanPhamController extends Controller
 {
     public function index(Request $request)
     {
-        $query = SanPham::with('danhMuc', 'bienThes', 'anhSanPhams');
+        $query = SanPham::with('danhMuc', 'nhaCungCap', 'bienThes', 'anhSanPhams');
 
         // Search
         if ($request->has('search') && $request->search) {
@@ -58,9 +58,11 @@ class SanPhamController extends Controller
     {
         $danhMucs = DanhMuc::all();
         $thuocTinhs = ThuocTinh::with('giaTriThuocTinhs')->get();
+        $nhaCungCaps = \App\Models\NhaCungCap::all();
+        $thuongHieus = \App\Models\ThuongHieu::all();
         // Tìm thuộc tính "Kích thước màn hình" để có thể filter
         $kichThuocManHinhId = ThuocTinh::where('ten', 'Kích thước màn hình')->value('id');
-        return view('admin.sanpham.create', compact('danhMucs', 'thuocTinhs', 'kichThuocManHinhId'));
+        return view('admin.sanpham.create', compact('danhMucs', 'thuocTinhs', 'nhaCungCaps', 'thuongHieus', 'kichThuocManHinhId'));
     }
 
     public function store(Request $request)
@@ -92,6 +94,7 @@ class SanPhamController extends Controller
             'ten' => 'required|string|max:255',
             'danhmuc_id' => 'required|exists:danhmuc,id',
             'thuong_hieu_id' => 'nullable|exists:thuong_hieu,id',
+            'nhacungcap_id' => 'required|exists:nha_cung_cap,id',
             'mota' => 'nullable|string',
             'trang_thai' => 'nullable|in:draft,active,inactive',
             'thuoc_tinh_ids' => 'nullable|array',
@@ -138,6 +141,7 @@ class SanPhamController extends Controller
                 'slug' => $uniqueSlug,
                 'danhmuc_id' => $request->danhmuc_id,
                 'thuong_hieu_id' => $request->thuong_hieu_id ?? null,
+                'nhacungcap_id' => $request->nhacungcap_id,
                 'mo_ta_chi_tiet' => $request->mota ?? null,
                 'trang_thai' => $request->trang_thai ?? 'draft',
             ]);
@@ -197,6 +201,8 @@ class SanPhamController extends Controller
         $sanPham = SanPham::with(['thuocTinhs', 'bienThes.giaTriThuocTinhs', 'anhSanPhams', 'danhMuc'])->findOrFail($id);
         $danhMucs = DanhMuc::all();
         $thuocTinhs = ThuocTinh::with('giaTriThuocTinhs')->get();
+        $nhaCungCaps = \App\Models\NhaCungCap::all();
+        $thuongHieus = \App\Models\ThuongHieu::all();
         // Tìm thuộc tính "Kích thước màn hình" để có thể filter
         $kichThuocManHinhId = ThuocTinh::where('ten', 'Kích thước màn hình')->value('id');
         // Kiểm tra xem danh mục có phải là điện thoại không (dựa vào tên danh mục)
@@ -205,7 +211,7 @@ class SanPhamController extends Controller
             stripos($sanPham->danhMuc->ten, 'smartphone') !== false ||
             stripos($sanPham->danhMuc->ten, 'phone') !== false
         );
-        return view('admin.sanpham.edit', compact('sanPham', 'danhMucs', 'thuocTinhs', 'kichThuocManHinhId', 'isDienThoai'));
+        return view('admin.sanpham.edit', compact('sanPham', 'danhMucs', 'thuocTinhs', 'nhaCungCaps', 'thuongHieus', 'kichThuocManHinhId', 'isDienThoai'));
     }
 
     public function update(Request $request, $id)
@@ -216,6 +222,7 @@ class SanPhamController extends Controller
             'ten' => 'required|string|max:255',
             'danhmuc_id' => 'required|exists:danhmuc,id',
             'thuong_hieu_id' => 'nullable|exists:thuong_hieu,id',
+            'nhacungcap_id' => 'required|exists:nha_cung_cap,id',
             'mota' => 'nullable|string',
             'trang_thai' => 'nullable|in:draft,active,inactive',
             'thuoc_tinh_ids' => 'nullable|array',
@@ -228,6 +235,7 @@ class SanPhamController extends Controller
                 'ten' => $request->ten,
                 'danhmuc_id' => $request->danhmuc_id,
                 'thuong_hieu_id' => $request->thuong_hieu_id ?? null,
+                'nhacungcap_id' => $request->nhacungcap_id,
                 'mo_ta_chi_tiet' => $request->mota ?? null,
                 'trang_thai' => $request->trang_thai ?? $sanPham->trang_thai,
             ];
