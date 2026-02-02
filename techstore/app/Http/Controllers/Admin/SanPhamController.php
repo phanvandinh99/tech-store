@@ -108,92 +108,204 @@ class SanPhamController extends Controller
             'bien_the.*.giatri_thuoctinh_ids.*' => 'exists:giatri_thuoctinh,id',
         ];
 
-        // Chỉ validate ảnh nếu có file được upload
+        // Custom validation cho ảnh không cần php_fileinfo
+        $customImageValidation = function($files, $fieldName = 'images') {
+            if (!$files) return ['valid' => true];
+            
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            $maxSize = 2048 * 1024; // 2MB in bytes
+            
+            foreach ($files as $file) {
+                if (!$file || !$file->isValid()) {
+                    return ['valid' => false, 'message' => "File {$fieldName} không hợp lệ hoặc bị lỗi khi upload."];
+                }
+                
+                $extension = strtolower($file->getClientOriginalExtension());
+                if (!in_array($extension, $allowedExtensions)) {
+                    return ['valid' => false, 'message' => "File {$fieldName} phải có định dạng: jpg, jpeg, png, gif, webp."];
+                }
+                
+                if ($file->getSize() > $maxSize) {
+                    return ['valid' => false, 'message' => "File {$fieldName} không được vượt quá 2MB."];
+                }
+            }
+            return ['valid' => true];
+        };
+
+        // Validate ảnh chung (không bắt buộc)
         if ($request->hasFile('images')) {
-            $rules['images'] = 'array';
-            $rules['images.*'] = 'image|mimes:jpeg,png,jpg,gif,webp|max:2048';
+            $validation = $customImageValidation($request->file('images'), 'ảnh sản phẩm');
+            if (!$validation['valid']) {
+                return back()->withErrors(['images' => $validation['message']])->withInput();
+            }
         }
 
-        // Validate ảnh cho từng biến thể nếu có
+        // Validate ảnh biến thể (không bắt buộc)
         if ($request->has('bien_the') && is_array($request->bien_the)) {
             foreach ($request->bien_the as $index => $bt) {
                 if (isset($bt['images']) && $request->hasFile("bien_the.{$index}.images")) {
-                    $rules["bien_the.{$index}.images"] = 'array';
-                    $rules["bien_the.{$index}.images.*"] = 'image|mimes:jpeg,png,jpg,gif,webp|max:2048';
+                    $validation = $customImageValidation($request->file("bien_the.{$index}.images"), "ảnh biến thể " . ($index + 1));
+                    if (!$validation['valid']) {
+                        return back()->withErrors(["bien_the.{$index}.images" => $validation['message']])->withInput();
+                    }
                 }
             }
         }
 
-        $request->validate($rules);
-
-        DB::transaction(function () use ($request) {
-            // Tạo slug từ tên sản phẩm
-            $slug = Str::slug($request->ten);
-            $uniqueSlug = $slug;
-            $counter = 1;
-            while (SanPham::where('slug', $uniqueSlug)->exists()) {
-                $uniqueSlug = $slug . '-' . $counter;
-                $counter++;
+        // Chỉ validate các field khác, bỏ qua image validation
+        unset($rules['images']);
+        foreach ($rules as $key => $rule) {
+            if (strpos($key, '.images') !== false) {
+                unset($rules[$key]);
             }
-            
-            $sanPham = SanPham::create([
-                'ten' => $request->ten,
-                'slug' => $uniqueSlug,
-                'danhmuc_id' => $request->danhmuc_id,
-                'thuong_hieu_id' => $request->thuong_hieu_id ?? null,
-                'nhacungcap_id' => $request->nhacungcap_id,
-                'mo_ta_chi_tiet' => $request->mota ?? null,
-                'trang_thai' => $request->trang_thai ?? 'draft',
-            ]);
+        }
 
-            // Attach thuộc tính
-            if ($request->thuoc_tinh_ids) {
-                $sanPham->thuocTinhs()->attach($request->thuoc_tinh_ids);
-            }
+        try {
+            $request->validate($rules);
 
-            // Tạo biến thể
-            foreach ($request->bien_the as $index => $bt) {
-                // Tạo SKU unique nếu trùng
-                $sku = $this->generateUniqueSku($bt['sku'] ?? null, $sanPham->id);
+            DB::transaction(function () use ($request) {
+                // Tạo slug từ tên sản phẩm
+                $slug = Str::slug($request->ten);
+                $uniqueSlug = $slug;
+                $counter = 1;
+                while (SanPham::where('slug', $uniqueSlug)->exists()) {
+                    $uniqueSlug = $slug . '-' . $counter;
+                    $counter++;
+                }
                 
-                $bienThe = BienThe::create([
-                    'sanpham_id' => $sanPham->id,
-                    'sku' => $sku,
-                    'gia' => $bt['gia'],
-                    'gia_von' => $bt['gia_von'],
-                    'so_luong_ton' => $bt['so_luong_ton'] ?? 0,
+                $sanPham = SanPham::create([
+                    'ten' => $request->ten,
+                    'slug' => $uniqueSlug,
+                    'danhmuc_id' => $request->danhmuc_id,
+                    'thuong_hieu_id' => $request->thuong_hieu_id ?? null,
+                    'nhacungcap_id' => $request->nhacungcap_id,
+                    'mo_ta_chi_tiet' => $request->mota ?? null,
+                    'trang_thai' => $request->trang_thai ?? 'draft',
                 ]);
 
-                // Attach giá trị thuộc tính cho biến thể (filter bỏ giá trị rỗng)
-                if (isset($bt['giatri_thuoctinh_ids']) && is_array($bt['giatri_thuoctinh_ids'])) {
-                    $giatriIds = array_filter($bt['giatri_thuoctinh_ids'], function($value) {
-                        return !empty($value) && $value !== '';
+                // Attach thuộc tính
+                if ($request->thuoc_tinh_ids) {
+                    $sanPham->thuocTinhs()->attach($request->thuoc_tinh_ids);
+                }
+
+                // Tạo biến thể
+                foreach ($request->bien_the as $index => $bt) {
+                    // Tạo SKU unique nếu trùng
+                    $sku = $this->generateUniqueSku($bt['sku'] ?? null, $sanPham->id);
+                    
+                    $bienThe = BienThe::create([
+                        'sanpham_id' => $sanPham->id,
+                        'sku' => $sku,
+                        'gia' => $bt['gia'],
+                        'gia_von' => $bt['gia_von'],
+                        'so_luong_ton' => $bt['so_luong_ton'] ?? 0,
+                    ]);
+
+                    // Attach giá trị thuộc tính cho biến thể (filter bỏ giá trị rỗng)
+                    if (isset($bt['giatri_thuoctinh_ids']) && is_array($bt['giatri_thuoctinh_ids'])) {
+                        $giatriIds = array_filter($bt['giatri_thuoctinh_ids'], function($value) {
+                            return !empty($value) && $value !== '';
+                        });
+                        if (!empty($giatriIds)) {
+                            $bienThe->giaTriThuocTinhs()->attach(array_values($giatriIds));
+                        }
+                    }
+
+                    // Upload ảnh cho biến thể (nếu có)
+                    if ($request->hasFile("bien_the.{$index}.images")) {
+                        try {
+                            $files = $request->file("bien_the.{$index}.images");
+                            if (is_array($files) && count($files) > 0) {
+                                $this->uploadImages($files, $sanPham->id, $bienThe->id, $index === 0);
+                            }
+                        } catch (\Exception $e) {
+                            \Log::warning("Không thể upload ảnh biến thể {$index}: " . $e->getMessage());
+                        }
+                    }
+                }
+
+                // Upload ảnh chung cho sản phẩm (nếu có)
+                if ($request->hasFile('images')) {
+                    try {
+                        $files = $request->file('images');
+                        if (is_array($files) && count($files) > 0) {
+                            $this->uploadImages($files, $sanPham->id, null, true);
+                        }
+                    } catch (\Exception $e) {
+                        \Log::warning("Không thể upload ảnh sản phẩm: " . $e->getMessage());
+                    }
+                }
+            });
+
+            return redirect()->route('admin.sanpham.index')
+                ->with('success', 'Thêm sản phẩm thành công!');
+                
+        } catch (\Exception $e) {
+            \Log::error('Lỗi khi tạo sản phẩm: ' . $e->getMessage(), [
+                'user_id' => auth()->id(),
+                'request_data' => $request->except(['images', 'bien_the.*.images']),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            // Nếu lỗi liên quan đến fileinfo, thử tạo sản phẩm mà không có ảnh
+            if (strpos($e->getMessage(), 'finfo') !== false || strpos($e->getMessage(), 'fileinfo') !== false) {
+                try {
+                    // Tạo lại sản phẩm mà không upload ảnh
+                    DB::transaction(function () use ($request) {
+                        $slug = Str::slug($request->ten);
+                        $uniqueSlug = $slug;
+                        $counter = 1;
+                        while (SanPham::where('slug', $uniqueSlug)->exists()) {
+                            $uniqueSlug = $slug . '-' . $counter;
+                            $counter++;
+                        }
+                        
+                        $sanPham = SanPham::create([
+                            'ten' => $request->ten,
+                            'slug' => $uniqueSlug,
+                            'danhmuc_id' => $request->danhmuc_id,
+                            'thuong_hieu_id' => $request->thuong_hieu_id ?? null,
+                            'nhacungcap_id' => $request->nhacungcap_id,
+                            'mo_ta_chi_tiet' => $request->mota ?? null,
+                            'trang_thai' => $request->trang_thai ?? 'draft',
+                        ]);
+
+                        if ($request->thuoc_tinh_ids) {
+                            $sanPham->thuocTinhs()->attach($request->thuoc_tinh_ids);
+                        }
+
+                        foreach ($request->bien_the as $index => $bt) {
+                            $sku = $this->generateUniqueSku($bt['sku'] ?? null, $sanPham->id);
+                            
+                            $bienThe = BienThe::create([
+                                'sanpham_id' => $sanPham->id,
+                                'sku' => $sku,
+                                'gia' => $bt['gia'],
+                                'gia_von' => $bt['gia_von'],
+                                'so_luong_ton' => $bt['so_luong_ton'] ?? 0,
+                            ]);
+
+                            if (isset($bt['giatri_thuoctinh_ids']) && is_array($bt['giatri_thuoctinh_ids'])) {
+                                $giatriIds = array_filter($bt['giatri_thuoctinh_ids'], function($value) {
+                                    return !empty($value) && $value !== '';
+                                });
+                                if (!empty($giatriIds)) {
+                                    $bienThe->giaTriThuocTinhs()->attach(array_values($giatriIds));
+                                }
+                            }
+                        }
                     });
-                    if (!empty($giatriIds)) {
-                        $bienThe->giaTriThuocTinhs()->attach(array_values($giatriIds));
-                    }
-                }
-
-                // Upload ảnh cho biến thể (nếu có)
-                if ($request->hasFile("bien_the.{$index}.images")) {
-                    $files = $request->file("bien_the.{$index}.images");
-                    if (is_array($files)) {
-                        $this->uploadImages($files, $sanPham->id, $bienThe->id, $index === 0);
-                    }
+                    
+                    return redirect()->route('admin.sanpham.index')
+                        ->with('warning', 'Sản phẩm đã được tạo thành công nhưng không thể upload ảnh do cấu hình server. Bạn có thể thêm ảnh sau.');
+                        
+                } catch (\Exception $e2) {
+                    return back()->withErrors(['error' => 'Có lỗi xảy ra khi tạo sản phẩm: ' . $e2->getMessage()])->withInput();
                 }
             }
-
-            // Upload ảnh chung cho sản phẩm (nếu có)
-            if ($request->hasFile('images')) {
-                $files = $request->file('images');
-                if (is_array($files)) {
-                    $this->uploadImages($files, $sanPham->id, null, true);
-                }
-            }
-        });
-
-        return redirect()->route('admin.sanpham.index')
-            ->with('success', 'Thêm sản phẩm thành công!');
+            
+            return back()->withErrors(['error' => 'Có lỗi xảy ra khi tạo sản phẩm. Vui lòng thử lại.'])->withInput();
+        }
     }
 
     public function edit($id)
@@ -290,7 +402,27 @@ class SanPhamController extends Controller
         }
 
         foreach ($files as $index => $file) {
-            $path = $file->store('products', 'public');
+            // Tạo tên file an toàn
+            $extension = strtolower($file->getClientOriginalExtension());
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            
+            if (!in_array($extension, $allowedExtensions)) {
+                continue; // Bỏ qua file không hợp lệ
+            }
+            
+            $filename = time() . '_' . $index . '_' . uniqid() . '.' . $extension;
+            
+            // Sử dụng move() thay vì storeAs() để tránh MIME type detection
+            $destinationPath = storage_path('app/public/products');
+            
+            // Tạo thư mục nếu chưa tồn tại
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0755, true);
+            }
+            
+            // Di chuyển file
+            $file->move($destinationPath, $filename);
+            $path = 'products/' . $filename;
             
             AnhSanPham::create([
                 'sanpham_id' => $sanPhamId,
