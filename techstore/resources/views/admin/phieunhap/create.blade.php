@@ -17,7 +17,7 @@
                         <div class="col-md-6">
                             <label for="nha_cung_cap_id" class="form-label">Nhà cung cấp</label>
                             <div class="input-group">
-                                <select class="form-select" id="nha_cung_cap_id" name="nha_cung_cap_id">
+                                <select class="form-select" id="nha_cung_cap_id" name="nha_cung_cap_id" onchange="filterProductsBySupplier()">
                                     <option value="">-- Chọn nhà cung cấp --</option>
                                     @foreach($nhaCungCaps as $ncc)
                                         <option value="{{ $ncc->id }}">{{ $ncc->ten }}</option>
@@ -26,6 +26,12 @@
                                 <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addNhaCungCapModal">
                                     <i class="bi bi-plus"></i> Thêm mới
                                 </button>
+                            </div>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" id="filterBySupplier" onchange="toggleSupplierFilter()">
+                                <label class="form-check-label" for="filterBySupplier">
+                                    <small class="text-muted">Chỉ hiển thị sản phẩm của nhà cung cấp đã chọn</small>
+                                </label>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -105,8 +111,99 @@
 @push('scripts')
 <script>
 const sanPhams = @json($sanPhamsFormatted);
+let allSanPhams = [...sanPhams]; // Lưu trữ tất cả sản phẩm
+let filteredSanPhams = [...sanPhams]; // Sản phẩm sau khi lọc
 
 let chiTietIndex = 0;
+
+// Lọc sản phẩm theo nhà cung cấp
+function filterProductsBySupplier() {
+    const nhaCungCapId = document.getElementById('nha_cung_cap_id').value;
+    const filterCheckbox = document.getElementById('filterBySupplier');
+    
+    if (nhaCungCapId && filterCheckbox.checked) {
+        filteredSanPhams = allSanPhams.filter(sp => sp.nha_cung_cap_id == nhaCungCapId);
+        
+        // Hiển thị thông báo số lượng sản phẩm
+        showFilterMessage(filteredSanPhams.length, getNhaCungCapName(nhaCungCapId));
+    } else {
+        filteredSanPhams = [...allSanPhams];
+        hideFilterMessage();
+    }
+    
+    // Cập nhật tất cả dropdown sản phẩm hiện có
+    updateAllProductDropdowns();
+}
+
+// Bật/tắt lọc theo nhà cung cấp
+function toggleSupplierFilter() {
+    filterProductsBySupplier();
+}
+
+// Lấy tên nhà cung cấp
+function getNhaCungCapName(id) {
+    const select = document.getElementById('nha_cung_cap_id');
+    const option = select.querySelector(`option[value="${id}"]`);
+    return option ? option.textContent : '';
+}
+
+// Hiển thị thông báo lọc
+function showFilterMessage(count, supplierName) {
+    let messageDiv = document.getElementById('filterMessage');
+    if (!messageDiv) {
+        messageDiv = document.createElement('div');
+        messageDiv.id = 'filterMessage';
+        messageDiv.className = 'alert alert-info mt-2';
+        document.querySelector('.col-md-6').appendChild(messageDiv);
+    }
+    messageDiv.innerHTML = `<i class="bi bi-funnel"></i> Đang hiển thị <strong>${count}</strong> sản phẩm của nhà cung cấp <strong>${supplierName}</strong>`;
+}
+
+// Ẩn thông báo lọc
+function hideFilterMessage() {
+    const messageDiv = document.getElementById('filterMessage');
+    if (messageDiv) {
+        messageDiv.remove();
+    }
+}
+
+// Cập nhật tất cả dropdown sản phẩm
+function updateAllProductDropdowns() {
+    const productSelects = document.querySelectorAll('.sanpham-select');
+    productSelects.forEach(select => {
+        const currentValue = select.value;
+        updateProductOptions(select);
+        
+        // Giữ lại giá trị đã chọn nếu vẫn có trong danh sách lọc
+        if (currentValue && filteredSanPhams.find(sp => sp.id == currentValue)) {
+            select.value = currentValue;
+        } else {
+            select.value = '';
+            // Reset biến thể nếu sản phẩm không còn trong danh sách
+            const index = select.name.match(/\[(\d+)\]/)[1];
+            const bientheSelect = document.getElementById(`bienthe_${index}`);
+            const tonkhoInput = document.getElementById(`tonkho_${index}`);
+            if (bientheSelect) bientheSelect.innerHTML = '<option value="">-- Chọn sản phẩm trước --</option>';
+            if (tonkhoInput) tonkhoInput.value = '';
+        }
+    });
+}
+
+// Cập nhật options cho một dropdown sản phẩm
+function updateProductOptions(select) {
+    const currentValue = select.value;
+    select.innerHTML = '<option value="">-- Chọn sản phẩm --</option>';
+    
+    filteredSanPhams.forEach(sp => {
+        const option = document.createElement('option');
+        option.value = sp.id;
+        option.textContent = `${sp.ten} (${sp.danh_muc})`;
+        if (sp.nha_cung_cap) {
+            option.textContent += ` - ${sp.nha_cung_cap}`;
+        }
+        select.appendChild(option);
+    });
+}
 
 function addChiTiet() {
     const container = document.getElementById('chiTietContainer');
@@ -125,9 +222,6 @@ function addChiTiet() {
                     <label class="form-label">Sản phẩm <span class="text-danger">*</span></label>
                     <select class="form-select sanpham-select" name="chi_tiet[${chiTietIndex}][sanpham_id]" onchange="updateBienTheOptions(this, ${chiTietIndex})" required>
                         <option value="">-- Chọn sản phẩm --</option>
-                        ${sanPhams.map(sp => 
-                            `<option value="${sp.id}">${sp.ten} (${sp.danh_muc})</option>`
-                        ).join('')}
                     </select>
                 </div>
                 <div class="col-md-6 mb-3">
@@ -152,6 +246,11 @@ function addChiTiet() {
         </div>
     `;
     container.appendChild(item);
+    
+    // Cập nhật options cho dropdown sản phẩm mới
+    const newSelect = item.querySelector('.sanpham-select');
+    updateProductOptions(newSelect);
+    
     chiTietIndex++;
 }
 
@@ -164,7 +263,7 @@ function updateBienTheOptions(select, index) {
     tonkhoInput.value = '';
     
     if (sanphamId) {
-        const sanpham = sanPhams.find(sp => sp.id == parseInt(sanphamId));
+        const sanpham = filteredSanPhams.find(sp => sp.id == parseInt(sanphamId));
         if (sanpham && sanpham.bien_thes && sanpham.bien_thes.length > 0) {
             sanpham.bien_thes.forEach(bt => {
                 const option = document.createElement('option');
