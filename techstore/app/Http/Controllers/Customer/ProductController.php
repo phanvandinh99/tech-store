@@ -102,12 +102,29 @@ class ProductController extends Controller
 
         // Prepare variants data for JavaScript
         $variants = $product->bienThes->map(function($bt) {
+            // Lấy ảnh của biến thể
+            $variantImages = $bt->anhSanPhams;
+            $primaryImage = $variantImages->where('la_anh_chinh', true)->first();
+            
+            // Nếu không có ảnh riêng, dùng ảnh chung của sản phẩm
+            if (!$primaryImage) {
+                $primaryImage = $bt->sanPham->anhSanPhams->where('la_anh_chinh', true)->first();
+            }
+            
             return [
                 'id' => $bt->id,
                 'sku' => $bt->sku,
                 'gia' => $bt->gia,
+                'gia_cu' => $bt->gia_cu,
                 'so_luong_ton' => $bt->so_luong_ton,
-                'giatri_ids' => $bt->giaTriThuocTinhs->pluck('id')->toArray()
+                'giatri_ids' => $bt->giaTriThuocTinhs->pluck('id')->toArray(),
+                'images' => $variantImages->map(function($img) {
+                    return [
+                        'url' => asset('storage/' . $img->duong_dan),
+                        'is_primary' => $img->la_anh_chinh
+                    ];
+                })->values()->toArray(),
+                'primary_image' => $primaryImage ? asset('storage/' . $primaryImage->duong_dan) : null
             ];
         })->values();
 

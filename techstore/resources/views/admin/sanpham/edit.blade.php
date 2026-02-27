@@ -157,9 +157,15 @@
                                         <select class="form-select" name="bien_the_id">
                                             <option value="">Ảnh chung của sản phẩm</option>
                                             @foreach($sanPham->bienThes as $bienThe)
-                                                <option value="{{ $bienThe->id }}">SKU: {{ $bienThe->sku }}</option>
+                                                <option value="{{ $bienThe->id }}">
+                                                    {{ $bienThe->sku }}
+                                                    @if($bienThe->giaTriThuocTinhs->count() > 0)
+                                                        - ({{ $bienThe->giaTriThuocTinhs->pluck('giatri')->implode(', ') }})
+                                                    @endif
+                                                </option>
                                             @endforeach
                                         </select>
+                                        <small class="text-muted">Chọn biến thể để ảnh hiển thị khi khách chọn biến thể đó</small>
                                     </div>
                                     <div class="col-md-2 mb-3 d-flex align-items-end">
                                         <button type="submit" class="btn btn-primary w-100">
@@ -192,7 +198,12 @@
                                             </button>
                                         </div>
                                         @if($anh->bienThe)
-                                            <small class="text-muted d-block mt-2">Biến thể: {{ $anh->bienThe->sku }}</small>
+                                            <small class="text-muted d-block mt-2">
+                                                <strong>Biến thể:</strong> {{ $anh->bienThe->sku }}
+                                                @if($anh->bienThe->giaTriThuocTinhs->count() > 0)
+                                                    <br>({{ $anh->bienThe->giaTriThuocTinhs->pluck('giatri')->implode(', ') }})
+                                                @endif
+                                            </small>
                                         @else
                                             <small class="text-muted d-block mt-2">Ảnh chung</small>
                                         @endif

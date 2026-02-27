@@ -432,36 +432,46 @@
                                         <div class="product_variant">
                                             <h3>Tùy chọn có sẵn</h3>
                                             @foreach($product->thuocTinhs as $thuocTinh)
+                                            @php
+                                                // Lấy các giá trị thuộc tính thực sự có trong biến thể
+                                                $availableGiaTris = [];
+                                                foreach($product->bienThes as $bt) {
+                                                    foreach($bt->giaTriThuocTinhs as $gttt) {
+                                                        if($gttt->thuoctinh_id == $thuocTinh->id) {
+                                                            $found = false;
+                                                            foreach($availableGiaTris as $existing) {
+                                                                if($existing->id == $gttt->id) {
+                                                                    $found = true;
+                                                                    break;
+                                                                }
+                                                            }
+                                                            if(!$found) {
+                                                                $availableGiaTris[] = $gttt;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            @endphp
+                                            
+                                            @if(count($availableGiaTris) > 0)
                                             <div class="mb-3">
                                                 <label>{{ $thuocTinh->ten }}</label>
                                                 <div class="variant-options">
-                                                    @foreach($thuocTinh->giaTriThuocTinhs as $giaTri)
-                                                        @php
-                                                            $hasVariant = $product->bienThes->filter(function($bt) use ($giaTri) {
-                                                                return $bt->giaTriThuocTinhs->contains($giaTri->id);
-                                                            })->count() > 0;
-                                                        @endphp
-                                                        <span class="variant-option {{ !$hasVariant ? 'disabled' : '' }}" 
+                                                    @foreach($availableGiaTris as $giaTri)
+                                                        <span class="variant-option" 
                                                               data-attribute="{{ $thuocTinh->id }}" 
                                                               data-value="{{ $giaTri->id }}"
+                                                              data-attribute-name="{{ $thuocTinh->ten }}"
                                                               onclick="selectVariantOption(this, {{ $thuocTinh->id }}, {{ $giaTri->id }})">
                                                             {{ $giaTri->giatri }}
                                                         </span>
                                                     @endforeach
                                                 </div>
                                             </div>
+                                            @endif
                                             @endforeach
                                         </div>
                                     @endif
-
-                                    <!-- Variant Info Display -->
-                                    <div id="variantInfo" class="variant-info-box" style="display: none;">
-                                        <div>
-                                            <strong>SKU:</strong> <span id="variant_sku"></span><br>
-                                            <strong>Giá:</strong> <span id="variant_price"></span><br>
-                                            <strong>Tồn kho:</strong> <span id="variant_stock"></span>
-                                        </div>
-                                    </div>
 
                                     <div class="product_variant quantity">
                                         <label>Số lượng</label>
@@ -792,7 +802,26 @@ function selectVariantOption(element, attributeId, valueId) {
     element.classList.add('selected');
     
     selectedAttributes[attributeId] = valueId;
+    
+    // Nếu là thuộc tính màu sắc, tìm và đổi ảnh ngay
+    const attributeName = element.dataset.attributeName;
+    if (attributeName && attributeName.toLowerCase().includes('màu')) {
+        updateImageByColor(valueId);
+    }
+    
     updateVariantSelection();
+}
+
+// Function to update image when color is selected
+function updateImageByColor(colorValueId) {
+    // Tìm biến thể có màu sắc này
+    const variantWithColor = variants.find(variant => {
+        return variant.giatri_ids.includes(parseInt(colorValueId));
+    });
+    
+    if (variantWithColor && variantWithColor.images && variantWithColor.images.length > 0) {
+        updateVariantImages(variantWithColor);
+    }
 }
 
 function updateVariantSelection() {
@@ -806,19 +835,42 @@ function updateVariantSelection() {
                variantGiatriIds.every(vId => selectedValues.includes(vId));
     });
     
+    const addToCartBtn = document.getElementById('addToCartBtn');
+    
     if (matchingVariant) {
         document.getElementById('selected_variant_id').value = matchingVariant.id;
         document.getElementById('selected_price').value = matchingVariant.gia;
-        document.getElementById('variant_sku').textContent = matchingVariant.sku;
-        document.getElementById('variant_price').textContent = new Intl.NumberFormat('vi-VN').format(matchingVariant.gia) + ' đ';
         
-        const stockText = matchingVariant.so_luong_ton > 0 
-            ? matchingVariant.so_luong_ton 
-            : '<span class="text-danger">Hết hàng</span>';
-        document.getElementById('variant_stock').innerHTML = stockText;
+        // Update the price display (both old_price and current_price)
+        const priceBox = document.querySelector('.price_box');
+        if (priceBox) {
+            let priceHtml = '';
+            
+            // Show old price if exists
+            if (matchingVariant.gia_cu && matchingVariant.gia_cu > matchingVariant.gia) {
+                priceHtml += '<span class="old_price">' + new Intl.NumberFormat('vi-VN').format(matchingVariant.gia_cu) + ' đ</span>';
+            }
+            
+            // Show current price
+            priceHtml += '<span class="current_price">' + new Intl.NumberFormat('vi-VN').format(matchingVariant.gia) + ' đ</span>';
+            
+            priceBox.innerHTML = priceHtml;
+        }
         
-        document.getElementById('variantInfo').style.display = 'block';
-        document.getElementById('addToCartBtn').disabled = matchingVariant.so_luong_ton <= 0;
+        // Update images if variant has images
+        if (matchingVariant.images && matchingVariant.images.length > 0) {
+            updateVariantImages(matchingVariant);
+        }
+        
+        // Update button text and state based on stock
+        if (matchingVariant.so_luong_ton <= 0) {
+            addToCartBtn.disabled = true;
+            addToCartBtn.textContent = 'HẾT HÀNG';
+        } else {
+            addToCartBtn.disabled = false;
+            addToCartBtn.textContent = 'Thêm vào giỏ hàng';
+        }
+        
         document.getElementById('product_quantity').max = matchingVariant.so_luong_ton;
         
         // Reset quantity if it exceeds stock
@@ -827,8 +879,31 @@ function updateVariantSelection() {
             quantityInput.value = matchingVariant.so_luong_ton > 0 ? matchingVariant.so_luong_ton : 1;
         }
     } else {
-        document.getElementById('variantInfo').style.display = 'none';
-        document.getElementById('addToCartBtn').disabled = true;
+        // No matching variant found (incomplete selection or no valid combination)
+        addToCartBtn.disabled = true;
+        addToCartBtn.textContent = 'HẾT HÀNG';
+    }
+}
+
+// Function to update images when variant is selected
+function updateVariantImages(variant) {
+    // Chỉ cập nhật ảnh chính, không thay đổi gallery thumbnails
+    const mainImage = document.getElementById('zoom1');
+    if (mainImage && variant.primary_image) {
+        mainImage.src = variant.primary_image;
+        document.getElementById('selected_image').value = variant.primary_image;
+        
+        // Cập nhật active state cho thumbnail tương ứng (nếu có trong gallery)
+        const gallery = document.getElementById('gallery_01');
+        if (gallery) {
+            const thumbnails = gallery.querySelectorAll('.elevatezoom-gallery');
+            thumbnails.forEach(thumb => {
+                thumb.classList.remove('active');
+                if (thumb.dataset.image === variant.primary_image) {
+                    thumb.classList.add('active');
+                }
+            });
+        }
     }
 }
 
@@ -854,17 +929,42 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             // No attributes, just select first variant directly
             const firstVariant = variants[0];
+            const addToCartBtn = document.getElementById('addToCartBtn');
+            
             document.getElementById('selected_variant_id').value = firstVariant.id;
             document.getElementById('selected_price').value = firstVariant.gia;
             document.getElementById('variant_sku').textContent = firstVariant.sku;
-            document.getElementById('variant_price').textContent = new Intl.NumberFormat('vi-VN').format(firstVariant.gia) + ' đ';
-            document.getElementById('variant_stock').textContent = firstVariant.so_luong_ton;
-            document.getElementById('variantInfo').style.display = 'block';
-            document.getElementById('addToCartBtn').disabled = firstVariant.so_luong_ton <= 0;
+            
+            // Update the price display (both old_price and current_price)
+            const priceBox = document.querySelector('.price_box');
+            if (priceBox) {
+                let priceHtml = '';
+                
+                // Show old price if exists
+                if (firstVariant.gia_cu && firstVariant.gia_cu > firstVariant.gia) {
+                    priceHtml += '<span class="old_price">' + new Intl.NumberFormat('vi-VN').format(firstVariant.gia_cu) + ' đ</span>';
+                }
+                
+                // Show current price
+                priceHtml += '<span class="current_price">' + new Intl.NumberFormat('vi-VN').format(firstVariant.gia) + ' đ</span>';
+                
+                priceBox.innerHTML = priceHtml;
+            }
+            
+            // Update images if variant has images
+            if (firstVariant.images && firstVariant.images.length > 0) {
+                updateVariantImages(firstVariant);
+            }
+            
             document.getElementById('product_quantity').max = firstVariant.so_luong_ton;
             
+            // Update button text and state based on stock
             if (firstVariant.so_luong_ton <= 0) {
-                document.getElementById('variant_stock').innerHTML = '<span class="text-danger">Hết hàng</span>';
+                addToCartBtn.disabled = true;
+                addToCartBtn.textContent = 'HẾT HÀNG';
+            } else {
+                addToCartBtn.disabled = false;
+                addToCartBtn.textContent = 'Thêm vào giỏ hàng';
             }
         }
     }
