@@ -138,6 +138,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('thuonghieu/{id}', [ThuongHieuController::class, 'update'])->name('thuonghieu.update');
         Route::delete('thuonghieu/{id}', [ThuongHieuController::class, 'destroy'])->name('thuonghieu.destroy');
 
+        // Thuộc tính sản phẩm
+        Route::get('thuoctinh', [App\Http\Controllers\Admin\ThuocTinhController::class, 'index'])->name('thuoctinh.index');
+        Route::get('thuoctinh/create', [App\Http\Controllers\Admin\ThuocTinhController::class, 'create'])->name('thuoctinh.create');
+        Route::post('thuoctinh', [App\Http\Controllers\Admin\ThuocTinhController::class, 'store'])->name('thuoctinh.store');
+        Route::get('thuoctinh/{id}/edit', [App\Http\Controllers\Admin\ThuocTinhController::class, 'edit'])->name('thuoctinh.edit');
+        Route::put('thuoctinh/{id}', [App\Http\Controllers\Admin\ThuocTinhController::class, 'update'])->name('thuoctinh.update');
+        Route::delete('thuoctinh/{id}', [App\Http\Controllers\Admin\ThuocTinhController::class, 'destroy'])->name('thuoctinh.destroy');
+        Route::delete('thuoctinh/value/{id}', [App\Http\Controllers\Admin\ThuocTinhController::class, 'deleteValue'])->name('thuoctinh.deleteValue');
+
         // Đơn hàng
         Route::get('donhang', [DonHangController::class, 'index'])->name('donhang.index');
         Route::get('donhang/{donHang}', [DonHangController::class, 'show'])->name('donhang.show');

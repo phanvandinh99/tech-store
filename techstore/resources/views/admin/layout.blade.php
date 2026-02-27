@@ -480,6 +480,10 @@
                 <i class="bi bi-bookmark-star"></i>
                 <span>Thương hiệu</span>
             </a>
+            <a class="nav-link {{ request()->routeIs('admin.thuoctinh.*') ? 'active' : '' }}" href="{{ route('admin.thuoctinh.index') }}">
+                <i class="bi bi-sliders"></i>
+                <span>Thuộc tính</span>
+            </a>
             <a class="nav-link {{ request()->routeIs('admin.sanpham.*') ? 'active' : '' }}" href="{{ route('admin.sanpham.index') }}">
                 <i class="bi bi-box"></i>
                 <span>Sản phẩm</span>
