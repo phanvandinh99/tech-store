@@ -11,7 +11,7 @@ class YeuCauBaoHanh extends Model
     protected $table = 'yeu_cau_bao_hanh';
     
     protected $fillable = [
-        'nguoi_dung_id', 'donhang_id', 'bien_the_id', 'ma_yeu_cau',
+        'nguoi_dung_id', 'donhang_id', 'bien_the_id', 'imei_id', 'ma_yeu_cau',
         'mo_ta_loi', 'hinh_thuc_bao_hanh', 'trang_thai',
         'ghi_chu_noi_bo', 'phieu_bao_hanh_chinh_hang',
         'ngay_tiep_nhan', 'ngay_hoan_thanh'
@@ -40,6 +40,11 @@ class YeuCauBaoHanh extends Model
     public function anhBaoHanh(): HasMany
     {
         return $this->hasMany(AnhBaoHanh::class, 'yeu_cau_id');
+    }
+
+    public function imei(): BelongsTo
+    {
+        return $this->belongsTo(Imei::class, 'imei_id');
     }
 
     // Tạo mã yêu cầu tự động

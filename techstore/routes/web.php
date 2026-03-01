@@ -258,6 +258,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::patch('baohanh/{id}/status', [BaoHanhController::class, 'updateStatus'])->name('baohanh.status');
         Route::delete('baohanh/{id}', [BaoHanhController::class, 'destroy'])->name('baohanh.destroy');
 
+        // IMEI Management
+        Route::get('imei', [App\Http\Controllers\Admin\ImeiController::class, 'index'])->name('imei.index');
+        Route::get('imei/create', [App\Http\Controllers\Admin\ImeiController::class, 'create'])->name('imei.create');
+        Route::post('imei', [App\Http\Controllers\Admin\ImeiController::class, 'store'])->name('imei.store');
+        Route::get('imei/{id}/edit', [App\Http\Controllers\Admin\ImeiController::class, 'edit'])->name('imei.edit');
+        Route::put('imei/{id}', [App\Http\Controllers\Admin\ImeiController::class, 'update'])->name('imei.update');
+        Route::delete('imei/{id}', [App\Http\Controllers\Admin\ImeiController::class, 'destroy'])->name('imei.destroy');
+        Route::get('imei/bulk-create', [App\Http\Controllers\Admin\ImeiController::class, 'bulkCreate'])->name('imei.bulk-create');
+        Route::post('imei/bulk-store', [App\Http\Controllers\Admin\ImeiController::class, 'bulkStore'])->name('imei.bulk-store');
+        Route::get('imei/api/bien-the/{sanphamId}', [App\Http\Controllers\Admin\ImeiController::class, 'getBienTheByProduct']);
+        Route::get('imei/api/imei-by-variant/{bienTheId}', [App\Http\Controllers\Admin\ImeiController::class, 'getImeiByBienThe']);
+
         // Nhật ký hoạt động
         Route::get('nhatky', [NhatKyController::class, 'index'])->name('nhatky.index');
         Route::get('nhatky/{id}', [NhatKyController::class, 'show'])->name('nhatky.show');

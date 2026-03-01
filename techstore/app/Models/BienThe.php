@@ -43,10 +43,21 @@ class BienThe extends Model
         return $this->hasMany(ChiTietPhieuNhap::class, 'bien_the_id');
     }
 
+    public function imeis(): HasMany
+    {
+        return $this->hasMany(Imei::class, 'bien_the_id');
+    }
+
     // Accessor để lấy chuỗi giá trị thuộc tính
     public function getGiaTriThuocTinhAttribute()
     {
         return $this->giaTriThuocTinhs->pluck('giatri')->implode(', ');
+    }
+
+    // Lấy số lượng IMEI có sẵn
+    public function getSoLuongImeiCoSanAttribute(): int
+    {
+        return $this->imeis()->where('trang_thai', Imei::TRANG_THAI_AVAILABLE)->count();
     }
 }
 

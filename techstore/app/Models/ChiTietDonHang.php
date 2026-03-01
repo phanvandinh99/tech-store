@@ -33,5 +33,10 @@ class ChiTietDonHang extends Model
     {
         return $this->belongsTo(BienThe::class, 'bien_the_id');
     }
+
+    public function imeis()
+    {
+        return $this->hasMany(Imei::class, 'chitiet_donhang_id');
+    }
 }
 

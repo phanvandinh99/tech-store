@@ -488,6 +488,10 @@
                 <i class="bi bi-box"></i>
                 <span>Sản phẩm</span>
             </a>
+            <a class="nav-link {{ request()->routeIs('admin.imei.*') ? 'active' : '' }}" href="{{ route('admin.imei.index') }}">
+                <i class="bi bi-upc-scan"></i>
+                <span>Quản lý IMEI</span>
+            </a>
             
             <div class="sidebar-divider px-3 py-2">
                 <small class="text-muted text-uppercase">Bán hàng</small>
