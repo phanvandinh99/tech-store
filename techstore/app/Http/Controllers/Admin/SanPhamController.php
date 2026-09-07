@@ -516,7 +516,7 @@ class SanPhamController extends Controller
         // Filter bỏ các giá trị rỗng trong giatri_thuoctinh_ids
         $giatriIds = $request->giatri_thuoctinh_ids ?? [];
         $giatriIds = array_filter($giatriIds, function($value) {
-            return !empty($value) && $value !== '';
+            return !empty($value) && $value !== '' && is_numeric($value);
         });
         $giatriIds = array_values($giatriIds); // Re-index array
         
@@ -569,7 +569,7 @@ class SanPhamController extends Controller
         // Filter bỏ các giá trị rỗng trong giatri_thuoctinh_ids
         $giatriIds = $request->giatri_thuoctinh_ids ?? [];
         $giatriIds = array_filter($giatriIds, function($value) {
-            return !empty($value) && $value !== '';
+            return !empty($value) && $value !== '' && is_numeric($value);
         });
         $giatriIds = array_values($giatriIds); // Re-index array
         

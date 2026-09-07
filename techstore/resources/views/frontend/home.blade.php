@@ -23,7 +23,6 @@
     
     /* Categories product uniform sizing */
     .categories_product_inner {
-        max-width: 750px;
         margin: 0 auto;
         display: flex;
         justify-content: center;

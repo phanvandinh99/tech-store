@@ -135,7 +135,7 @@
                 <div class="row align-items-center">
                     <div class="col-lg-2 col-md-3 col-4">
                         <div class="logo">
-                            <a href="{{ route('home') }}"><img src="{{ asset('assets/img/logo/logo.png') }}" alt="Tech Store"></a>
+                            <a href="{{ route('home') }}"><img src="{{ asset('assets/img/logo/logo_CoStore.jpg') }}" alt="Tech Store"></a>
                         </div>
                     </div>
                     <div class="col-lg-7 col-md-12">

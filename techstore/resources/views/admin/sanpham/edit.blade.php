@@ -312,7 +312,7 @@
                                     @if(!($isDienThoai && $kichThuocManHinhId && $thuocTinh->id == $kichThuocManHinhId))
                                     <div class="col-md-6 mb-2">
                                         <label class="form-label small"><strong>{{ $thuocTinh->ten }}</strong></label>
-                                        <select class="form-select form-select-sm" name="giatri_thuoctinh_ids[]">
+                                        <select class="form-select form-select-sm" name="giatri_thuoctinh_ids[]" data-thuoctinh-id="{{ $thuocTinh->id }}">
                                             <option value="">-- Chọn --</option>
                                             @foreach($thuocTinh->giaTriThuocTinhs as $giaTri)
                                                 <option value="{{ $giaTri->id }}">{{ $giaTri->giatri }}</option>
@@ -457,7 +457,7 @@ function editVariant(id, variant) {
     document.getElementById('edit_so_luong_ton_display').value = variantData.so_luong_ton;
     document.getElementById('edit_so_luong_ton').value = variantData.so_luong_ton;
     
-    // Populate giá trị thuộc tính
+    // Populate giá trị thuộc tính với select dropdown
     const container = document.getElementById('edit_giatri_container');
     container.innerHTML = '';
     const selectedGiatriIds = variantData.giatri_ids || [];
@@ -470,14 +470,22 @@ function editVariant(id, variant) {
             return;
         }
         
+        // Tìm giá trị đã chọn cho thuộc tính này
+        let selectedId = '';
+        Object.entries(ttData.giatri).forEach(([gtId, gtValue]) => {
+            if (selectedGiatriIds.includes(parseInt(gtId))) {
+                selectedId = gtId;
+            }
+        });
+        
         const col = document.createElement('div');
         col.className = 'col-md-6 mb-2';
         col.innerHTML = `
             <label class="form-label small"><strong>${ttData.ten}</strong></label>
-            <select class="form-select form-select-sm" name="giatri_thuoctinh_ids[]">
+            <select class="form-select form-select-sm" name="giatri_thuoctinh_ids[]" data-thuoctinh-id="${ttId}">
                 <option value="">-- Chọn --</option>
                 ${Object.entries(ttData.giatri).map(([gtId, gtValue]) => 
-                    `<option value="${gtId}" ${selectedGiatriIds.includes(parseInt(gtId)) ? 'selected' : ''}>${gtValue}</option>`
+                    `<option value="${gtId}" ${selectedId == gtId ? 'selected' : ''}>${gtValue}</option>`
                 ).join('')}
             </select>
         `;
