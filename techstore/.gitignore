@@ -33,15 +33,12 @@
 /node_modules
 npm-debug.log
 yarn-error.log
-package-lock.json
 yarn.lock
 
 # Build assets
-/public/build
 /public/hot
 /public/storage
 /public/mix-manifest.json
-/public/.htaccess
 
 # IDE & Editors
 /.idea

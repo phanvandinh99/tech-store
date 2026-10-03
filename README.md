@@ -272,8 +272,8 @@ Sau khi chạy `php artisan db:seed`, bạn sẽ có:
 - Password: `admin123`
 
 **Customer:**
-- Email: `customer@gmail.com`
-- Password: `customer123`
+- Email: `clontomi1@gmail.com`
+- Password: `abc123456`
 
 ## 📊 Dữ liệu mẫu
 
